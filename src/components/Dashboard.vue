@@ -1,13 +1,15 @@
-<template>
-    
-  <v-content>
-    <v-toolbar color="white">
-        <v-toolbar-title>Welcome</v-toolbar-title>
-        <v-btn id="btn_logout" depressed rounded text block small @click.native="logout()" >		
-            <v-icon  left style="padding-right:12px">exit_to_app</v-icon>
-            <span>Log Out</span>						
-        </v-btn>  
-    </v-toolbar>
+<template>    
+  <v-content>    
+    <v-card flat tile>
+      <v-toolbar dense color=" blue lighten-4">
+        <v-app-bar-nav-icon></v-app-bar-nav-icon>  
+        <v-toolbar-title>Make predictions through AWS with SCAR</v-toolbar-title>  
+        <v-spacer></v-spacer>  
+        <v-btn icon @click.native="logout()">
+          <v-icon color="red lighten-1">logout</v-icon>
+        </v-btn>       
+      </v-toolbar>
+    </v-card>
       <section>
         <v-parallax src="@/assets/fondoazul.jpg" height="500" alt="700">
           <!-- <v-spacer></v-spacer> -->
@@ -18,18 +20,7 @@
             class="white--text"
           >       
             
-          <img src="@/assets/fondo1.png" height="100%">   
-            <!-- <h1 class="white--text mb-2 display-1 text-center">Parallax Template</h1> -->
-            <!-- <div class="subheading mb-4 text-center">Powered by Vuetify</div> -->
-            <!-- <v-btn
-              class="mt-12"
-              color="blue lighten-2"
-              dark
-              large
-              href="/pre-made-themes"
-            >
-              Get Started
-            </v-btn> -->
+          <img src="@/assets/fondo1.png" height="100%">            
           </v-layout>
         </v-parallax>
       </section>
@@ -43,7 +34,7 @@
         >
           <v-flex xs12 sm4 class="my-4">
             <div class="text-center">
-              <h1 class="headline">Make predictions of a model through AWS</h1>
+              <h2 class="headline font-weight-black">Please select the files from which you want to obtain the prediction.</h2>
               <!-- <span class="subheading">
                 Cras facilisis mi vitae nunc
               </span> -->
@@ -56,8 +47,7 @@
                   <v-btn                    
                     color="primary"
                     dark                  
-                    depressed
-                    :loading=isSelecting                    
+                    depressed                                       
                     @click.native="selectimage()"
                   >
                     <v-icon left>note_add</v-icon>
@@ -66,9 +56,7 @@
                 </v-flex>
                 
                 <v-flex xs6 sm4 offset-sm3>
-                  <v-btn
-                    :loading="showUploading"
-                    :disabled="showUploading"
+                  <v-btn                    
                     color="teal"
                     class="white--text"
                     @click.native="clearall()"
@@ -84,6 +72,12 @@
       </section>
 
       <section>
+        <v-flex xs12>
+            <div class="text-center">
+              <span v-show="errorsfile" style="color: #cc3300; font-size: 12px;"><b>Please, select a file to upload.</b></span>              
+            </div>
+          </v-flex>
+        
         <v-flex xs12 sm6 offset-sm3 v-show="showSelectedFiles"  id="selectedList" class="text-xs-center">
             <!-- <v-flex xs12> -->
             <input type="file" id="files" ref="files" hidden=true multiple v-on:change="handleFilesUpload()"/>
@@ -118,27 +112,29 @@
        <section>
         <v-layout
           column
-          wrap
-          class="my-12"
+          wrap          
           align-center
         >
-          <v-flex xs12 sm4 class="my-4">
+          <v-flex xs12 sm4 justify-center >
             <div class="text-center">
-              <h1 class="headline">Working with the bucket</h1>
-              <!-- <span class="subheading">
-                Cras facilisis mi vitae nunc
-              </span> -->
+              <h3 class="headline">Elements for interacting with an AWS S3 bucket</h3>
+              <v-divider inset></v-divider>
+              <p></p>
+              <img src="@/assets/bucket.png"  height= "100" alt="">
+              <!-- <v-divider inset></v-divider> -->
+              <p></p>
+              <span class="subheading" style="color:#ff3333; font-size: 15pt">
+                Bucket name: {{env.albumBucketName}}
+              </span>
             </div>
           </v-flex>
           <v-flex xs12>
             <v-container grid-list-xl>
               <v-layout row wrap justify-center class="my-12">
                 <v-btn
-                    class="ma-6"
-                    :loading="showUploading"
-                    :disabled="showUploading"
+                    class="ma-6"                    
                     rounded
-                    color="lime lighten-1"
+                    color="red lighten-2"
                     @click.native="submitFiles()"
                 >
                     Upload Files
@@ -155,7 +151,7 @@
                     :loading="showUploading"
                     :disabled="showUploading"
                     rounded
-                    color="lime lighten-1"
+                    color="red lighten-2"
                     @click.native="listObjs()"
                 >
                     List Objects
@@ -165,8 +161,7 @@
                         <v-icon light>cached</v-icon>
                     </span>
                     </template>
-                </v-btn>               
-                
+                </v-btn>                   
               </v-layout>
             </v-container>
           </v-flex>          
@@ -175,8 +170,12 @@
 
     <section>
         <v-flex xs12 sm6 offset-sm3 v-show="showObjectsBuckets"  id="selectedBuckets" class="text-xs-center">                      
+              <span  style="color: #cc3300; font-size: 12px;">
+                <b>Note: You must update the list of objects until the prediction result appears in the output album.</b>
+              </span>              
+
              <v-list subheader dense >
-                <v-subheader inset>Folder</v-subheader>
+                <v-subheader inset>Albums</v-subheader>
 
                   <v-list-group
                     v-for="(album,key) in albums"
@@ -315,7 +314,8 @@
       showUploading: false,
       cognito_idp: '',
       files: [], 
-      albumName_in: 'input'
+      albumName_in: 'input',
+      errorsfile: false
                        
     }),  
     created(){         
@@ -481,10 +481,11 @@
             this.$refs.files.click()            
         },
         handleFilesUpload () {
-            // this.files = []      
-            let uploadedFiles = this.$refs.files.files			
-            this.filerequire = false
+            // this.files = []   
+            this.errorsfile = false            
             this.isSelecting = false
+            let uploadedFiles = this.$refs.files.files			
+               
             /*
                 Adds the uploaded file to the files array
             */
@@ -503,7 +504,9 @@
         }, 
         submitFiles(){      
           console.log(this.files)
-            if (this.files) {
+           
+            this.errorsfile = false
+            if (this.files.length != 0) {
                 var _this=this
                 for (let i = 0; i < this.files.length; i++) {
                     
@@ -538,7 +541,8 @@
                 } 
             }        
             else {
-                alert("Please choose a file to upload first.")
+                this.errorsfile = true
+                // alert("Please choose a file to upload first.")
                 }
         },
         clearall(){
