@@ -1,0 +1,649 @@
+<template>
+    
+  <v-content>
+    <v-toolbar color="white">
+        <v-toolbar-title>Welcome</v-toolbar-title>
+        <v-btn id="btn_logout" depressed rounded text block small @click.native="logout()" >		
+            <v-icon  left style="padding-right:12px">exit_to_app</v-icon>
+            <span>Log Out</span>						
+        </v-btn>  
+    </v-toolbar>
+      <section>
+        <v-parallax src="@/assets/fondoazul.jpg" height="500" alt="700">
+          <!-- <v-spacer></v-spacer> -->
+          <v-layout
+            column
+            align-center
+            justify-center
+            class="white--text"
+          >       
+            
+          <img src="@/assets/fondo1.png" height="100%">   
+            <!-- <h1 class="white--text mb-2 display-1 text-center">Parallax Template</h1> -->
+            <!-- <div class="subheading mb-4 text-center">Powered by Vuetify</div> -->
+            <!-- <v-btn
+              class="mt-12"
+              color="blue lighten-2"
+              dark
+              large
+              href="/pre-made-themes"
+            >
+              Get Started
+            </v-btn> -->
+          </v-layout>
+        </v-parallax>
+      </section>
+
+      <section>
+        <v-layout
+          column
+          wrap
+          class="my-12"
+          align-center
+        >
+          <v-flex xs12 sm4 class="my-4">
+            <div class="text-center">
+              <h1 class="headline">Make predictions of a model through AWS</h1>
+              <!-- <span class="subheading">
+                Cras facilisis mi vitae nunc
+              </span> -->
+            </div>
+          </v-flex>
+          <v-flex xs12>
+            <v-container grid-list-xl>
+              <v-layout row wrap justify-center class="my-12">
+                <v-flex xs6 sm4>                  
+                  <v-btn                    
+                    color="primary"
+                    dark                  
+                    depressed
+                    :loading=isSelecting                    
+                    @click.native="selectimage()"
+                  >
+                    <v-icon left>note_add</v-icon>
+                    SELECT FILES
+                  </v-btn>    
+                </v-flex>
+                
+                <v-flex xs6 sm4 offset-sm3>
+                  <v-btn
+                    :loading="showUploading"
+                    :disabled="showUploading"
+                    color="teal"
+                    class="white--text"
+                    @click.native="downloadFile()"
+                  >
+                    Clear All
+                    <v-icon right dark>clear</v-icon>
+                  </v-btn>   
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-flex>          
+        </v-layout>          
+      </section>
+
+      <section>
+        <v-flex xs12 sm6 offset-sm3 v-show="showSelectedFiles"  id="selectedList" class="text-xs-center">
+            <!-- <v-flex xs12> -->
+            <input type="file" id="files" ref="files" hidden=true multiple v-on:change="handleFilesUpload()"/>
+            <v-list subheader dense >
+                <v-subheader inset>File</v-subheader>
+                <v-list-item
+                    v-for="(file, key) in files"
+                    :key="key"
+                    @click.stop=""
+                >                                    
+                    <v-progress-circular
+                        indeterminate
+                        color="teal"
+                        v-show="showUploading"
+                    >
+                    </v-progress-circular>
+
+                    <v-list-item-content>
+                        <v-list-item-title>{{file.name}}</v-list-item-title>														
+                    </v-list-item-content>
+                    <v-list-item-action>
+                        <v-btn icon ripple @click="removeFile(key)">
+                            <v-icon color="red lighten-1">remove_circle_outline</v-icon>
+                        </v-btn>
+                    </v-list-item-action>
+                </v-list-item>
+            </v-list>                          
+                        <!-- </v-flex> -->
+        </v-flex>			        
+      </section>
+
+       <section>
+        <v-layout
+          column
+          wrap
+          class="my-12"
+          align-center
+        >
+          <v-flex xs12 sm4 class="my-4">
+            <div class="text-center">
+              <h1 class="headline">Working with the bucket</h1>
+              <!-- <span class="subheading">
+                Cras facilisis mi vitae nunc
+              </span> -->
+            </div>
+          </v-flex>
+          <v-flex xs12>
+            <v-container grid-list-xl>
+              <v-layout row wrap justify-center class="my-12">
+                <v-btn
+                    class="ma-6"
+                    :loading="showUploading"
+                    :disabled="showUploading"
+                    rounded
+                    color="lime lighten-1"
+                    @click.native="submitFiles()"
+                >
+                    Upload Files
+                    <v-icon right dark>cloud_upload</v-icon>
+                    <template v-slot:loader>
+                    <span class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                    </span>
+                    </template>
+                </v-btn>
+
+                <v-btn
+                    class="ma-6"
+                    :loading="showUploading"
+                    :disabled="showUploading"
+                    rounded
+                    color="lime lighten-1"
+                    @click.native="listObjs()"
+                >
+                    List Objects
+                    <v-icon right dark>view_list</v-icon>
+                    <template v-slot:loader>
+                    <span class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                    </span>
+                    </template>
+                </v-btn>               
+                
+              </v-layout>
+            </v-container>
+          </v-flex>          
+        </v-layout>          
+      </section>
+
+        <v-flex xs12 sm6 offset-sm3 v-show="showObjectsBuckets"  id="selectedBuckets" class="text-xs-center">
+            <!-- <v-flex xs12> -->
+            <!-- <input type="file" id="files" ref="files" hidden=true multiple v-on:change="handleFilesUpload()"/> -->
+            <!-- <v-list subheader dense >
+                <v-subheader inset>Folder</v-subheader>
+
+                  <v-list-group
+                    v-for="(album,key) in albums"
+                    :key="key"                      
+                    prepend-icon="folder"                    
+                    no-action
+                > -->
+
+                 <!-- <template v-slot:activator>
+                    <v-list-item-content>
+                        <v-list-item-title>{{album}}</v-list-item-title>
+                    </v-list-item-content>
+                      <v-list-item-action> -->
+                    <!-- <v-btn icon ripple @click="deleteAlbum(key)">
+                        <v-icon color="red lighten-1">delete_forever</v-icon>
+                    </v-btn> -->
+                <!-- </v-list-item-action>
+                 </template>                     -->
+               
+                          
+                <!-- <v-list-item 
+                    v-for="(albumfile, key2) in albumsFiles[album]"
+                    :key="key2"
+                    slot="activator"                    
+                >   -->
+                <!-- <v-list-item
+                    v-for="(album,key) in albums"
+                    :key="key"                      
+                    prepend-icon="folder"                    
+                    no-action                   
+                > -->
+                    <!-- <v-list-item-avatar>
+                        <v-icon>folder</v-icon>
+                    </v-list-item-avatar>                                  
+
+                    <v-list-item-content activator>
+                         <v-list-item-title>{{albumfile}}</v-list-item-title>														 -->
+                        <!-- <v-list-item-title>{{album}}</v-list-item-title>														
+                    </v-list-item-content>
+                    <v-list-item-action>                       
+                          <v-btn icon ripple @click="fileAlbum(album)">
+                                <v-icon color="red lighten-1">insert_drive_file</v-icon>
+                            </v-btn>                          
+                        
+                    </v-list-item-action>
+                </v-list-item>                 --> 
+                <!-- </v-list-group> -->
+            <!-- </v-list>    
+            <v-divider inset></v-divider>
+            <v-list subheader dense >
+                <v-subheader inset>Files of </v-subheader>                
+                <v-list-item
+                    v-for="(albumfile, key2) in albumsFiles"
+                    :key="key2"                    
+                >
+                    <v-list-item-avatar>
+                        <v-icon>insert_drive_file</v-icon>
+                    </v-list-item-avatar>                                  
+
+                    <v-list-item-content activator> -->
+                        <!-- <v-list-item-title>{{albumfile}}</v-list-item-title>														 -->
+                        <!-- <v-list-item-title>{{albumfile[0]}}</v-list-item-title>														
+                    </v-list-item-content>
+                    <v-list-item-action>
+                        <v-btn-toggle multiple>
+                            <v-btn icon ripple @click="downloadFile(albumfile[0])">
+                                <v-icon color="red lighten-1">cloud_download</v-icon>
+                            </v-btn>    
+                            <v-btn icon ripple @click="deleteFile(albumfile[0])">
+                                <v-icon color="red lighten-1">delete_forever</v-icon>
+                            </v-btn>
+                        </v-btn-toggle>
+                    </v-list-item-action>
+                </v-list-item>              
+            </v-list>     --> 
+
+            <v-expansion-panels>
+              <v-expansion-panel
+                v-for="(album,i) in albums"
+                :key="i"
+                @click.native="fileAlbum(album)"
+              >
+                <v-expansion-panel-header class="justify-self-start">
+                  <div>
+                    <v-icon left color="red lighten-1">folder</v-icon>
+                    <span>{{album}}</span>
+                  </div>
+                  </v-expansion-panel-header>
+                <v-expansion-panel-content
+                 v-for="(albumfile, key) in albumsFiles"
+                :key="key"
+                class="justify-self-start"
+                >
+                 <div>
+                    <v-icon left color="blue lighten-1">insert_drive_file</v-icon>
+                    <span> {{albumfile[0]}}</span>
+                  <div class="justify-self-end">
+
+                  <v-btn-toggle multiple>
+                            <v-btn icon ripple @click="downloadFile(albumfile[0])">
+                                <v-icon color="red lighten-1">cloud_download</v-icon>
+                            </v-btn>    
+                            <v-btn icon ripple @click="deleteFile(albumfile[0])">
+                                <v-icon color="red lighten-1">delete_forever</v-icon>
+                            </v-btn>
+                        </v-btn-toggle>               
+                  </div>
+                  </div>  
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
+
+
+
+                    
+        </v-flex>		
+
+
+
+      
+      <section>
+        <v-container grid-list-xl>
+          <v-layout row wrap justify-center class="my-12">
+            <v-flex xs12 sm4>
+              <v-card flat class="transparent">
+                <v-card-title primary-title class="layout justify-center">
+                  <div class="headline">Application info</div>
+                </v-card-title>
+                <v-card-text>
+                  This application allows you to load an image to obtain the prediction 
+                  of it through a machine learning model available from Amazon Web Services.
+                </v-card-text>
+              </v-card>
+            </v-flex>
+            <v-flex xs12 sm4 offset-sm1>
+              <v-card flat class="transparent">
+                <v-card-title primary-title class="layout justify-center">
+                  <div class="headline">Contact us</div>
+                </v-card-title>
+                <v-card-text>
+                  Grupo de Grid y Computación de Altas Prestaciones (GRyCAP)
+                </v-card-text>
+                <v-list class="transparent">
+                  <v-list-item>
+                    <v-list-item-action>
+                      <v-icon class="blue--text text--lighten-2">mdi-phone</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                      <v-list-item-title>(+34) 963877356</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-action>
+                      <v-icon class="blue--text text--lighten-2">mdi-map-marker</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                      <v-list-item-title>Valencia, Spain</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-action>
+                      <v-icon class="blue--text text--lighten-2">mdi-email</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                      <v-list-item-title>grycap@grycap.upv.es</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </v-flex>            
+          </v-layout>
+        </v-container>
+      </section>
+
+      <v-footer color="blue darken-2">
+        <v-layout row wrap align-center>
+          <v-flex xs12>
+            <div class="white--text ml-4">
+              <h5>© 2020, <a style="color:#ff9966;" href="https://www.grycap.upv.es">GRyCAP-I3M-UPV</a>, Universitat Politècnica de Valéncia, Spain.</h5>               </div>
+          </v-flex>
+        </v-layout>
+      </v-footer>
+    </v-content>
+</template>
+
+<script>
+  
+ import AWS from 'aws-sdk'
+ import axios from 'axios'
+ 
+//  import env from '../env.js'
+  export default {
+    data: () => ({
+      albumName : '',
+      albums: [],
+      albumsFiles: [],     
+      // bucketRegion: '',
+      // IdentityPoolId: '', 
+      s3 : new AWS.S3,
+      accessKeyId: '',
+      secretAccessKey: '', 
+      showObjectsBuckets: true,    
+      selectedFile: null,
+      isSelecting: false,
+      showUploading: false,
+      cognito_idp: '',
+      files: [], 
+                       
+    }),  
+    created(){         
+      this.cognito_idp = 'cognito-idp.'+this.env.COGNITO.region+'.amazonaws.com/'+this.env.COGNITO.UserPoolId
+      var cognitoUser = this.$cognitoAuth.getCurrentUser();
+      console.log(cognitoUser)
+      if (cognitoUser != null) {
+        var _this = this
+        cognitoUser.getSession(function(err, result) {
+          if (result) {
+            console.log('You are now logged in.');
+            console.log(result.getIdToken().getJwtToken())
+            // Add the User's Id Token to the Cognito credentials login map.
+              var awsconfig = {}              
+              awsconfig[_this.cognito_idp] = result.getIdToken().getJwtToken();
+             
+              AWS.config.region = 'us-east-1';
+              AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+              IdentityPoolId: _this.env.IdentityPoolId,
+              Logins: awsconfig
+              });      
+                            
+          }
+        })
+      }   
+        AWS.config.credentials.get(function(err){
+        // Credentials will be available when this function is called.
+            if (err) alert("Error: " + err);            
+        });
+        console.log(AWS.config.credentials)      
+    },
+    methods: {
+      
+        listObjs() {
+            AWS.config.credentials.get(function(err){
+                // Credentials will be available when this function is called.
+                if (err) alert("Error: " + err);            
+            });
+            // console.log(AWS.config.credentials.CognitoIdentityCredentials)
+            this.albums = []
+            this.albumsFiles = []
+            var params_alb = {
+                Bucket: this.env.albumBucketName,
+                Delimiter: "/"                 
+            };   
+            var _this = this
+            //List name of the album inside the bucket
+            this.s3.listObjects(params_alb, function(err, data) {
+                if (err) {
+                    console.log("There was an error listing your albums: " + err.message);
+                    // _this.logout()
+                } else {
+                    console.log(data)
+                    _this.data_album(data)                 
+                    }
+            });      
+        }, 
+        data_album(data) {         
+            
+            for (let i = 0; i < data.CommonPrefixes.length; i++) {       			
+                this.albums.push(data.CommonPrefixes[i].Prefix)            
+            }    
+            
+            // for (let i = 0; i < this.albums.length; i++) { 
+            //     var params = {
+            //         Bucket: this.env.albumBucketName, /* required */
+            //         Prefix: this.albums[i]  // Can be your folder name
+            //     };
+            //     var _this = this
+            //     if (!this.albumsFiles[params.Prefix]){
+            //         this.albumsFiles[params.Prefix] = []
+            //     }
+            //     // console.log(this.albumsFiles)
+            //     this.s3.listObjects(params, function(err, data) {
+            //         if (err) console.log(err, err.stack); // an error occurred
+            //         else  {
+            //             console.log(data);           // successful response                    
+            //             // console.log(data.Prefix)                         
+            //             for (let x = 1; x < data.Contents.length; x++) {
+            //                 _this.albumsFiles[data.Prefix].push([data.Contents[x].Key])                      
+                            
+            //             }    
+            //             // console.log(_this.albumsFiles)        
+            //         }   
+
+            //     });             
+            // }
+            console.log(this.albums)            
+        },   
+        fileAlbum(album){
+          // for (let i = 0; i < this.albums.length; i++) { 
+                this.albumsFiles = []
+                var params = {
+                    Bucket: this.env.albumBucketName, /* required */
+                    Prefix: album  // Can be your folder name
+                };
+                var _this = this
+                // if (!this.albumsFiles[params.Prefix]){
+                //     this.albumsFiles[params.Prefix] = []
+                // }
+                // console.log(this.albumsFiles)
+                this.s3.listObjects(params, function(err, data) {
+                    if (err) console.log(err, err.stack); // an error occurred
+                    else  {
+                        console.log(data.Contents.length);           // successful response                    
+                        // console.log(data.Prefix)                         
+                        for (let x = 1; x < data.Contents.length; x++) {
+                            // _this.albumsFiles[data.Prefix].push([data.Contents[x].Key])     
+                            console.log(data.Contents[x].Key)                 
+                            _this.albumsFiles.push([data.Contents[x].Key])                      
+                            
+                        }    
+                        console.log(_this.albumsFiles)        
+                    }   
+
+                });             
+            // }
+            console.log(this.albumsFiles)
+          
+        },
+        deleteFile(key){
+            var _this = this            
+            var params = {
+                Bucket: this.env.albumBucketName, /* required */
+                Delete: {
+                    Objects: [{
+                        Key : this.albumsFiles[key][0]
+                    }]
+                }
+
+            }
+            this.s3.deleteObjects(params, function(err, data) {
+                if (err) {
+                    console.log("There was an error deleting your photo: ", err.message);
+                } 
+                    console.log(data)
+                    alert("Successfully deleted photo.");
+                    _this.listObjs();
+            });
+
+        }, 
+        downloadFile(key){
+          console.log(key)
+          key = 'input/image.png'
+            var _this = this          
+            var params = {
+                Bucket: this.env.albumBucketName,
+                Key: key
+            }                   
+       console.log(key)
+
+       const url = new Promise((resolve, reject) => {
+       this.s3.getSignedUrl('getObject', params, function (err, url) {
+        if (err) {
+          reject(err)
+        }
+        console.log(url)
+        resolve(url)
+      })
+    }).then(function(result){
+      console.log(result)
+      axios({url:result,method:'GET',responseType: 'blob'})
+        .then(response => {
+                _this.forceFileDownload(response,key)  
+            })
+        .catch(() => console.log('error occured'))
+    })
+   
+    console.log(url.PromiseValue, params.Key)       
+            
+        },
+        forceFileDownload(response,key){
+            console.log(response)
+            const url = window.URL.createObjectURL(new Blob([response.data]))
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', key) //or any other extension
+            document.body.appendChild(link)
+            link.click()
+        },
+        selectimage(){
+            this.isSelecting = true
+            this.$refs.files.click()            
+        },
+        handleFilesUpload () {
+            // this.files = []      
+            let uploadedFiles = this.$refs.files.files			
+            this.filerequire = false
+            this.isSelecting = false
+            /*
+                Adds the uploaded file to the files array
+            */
+            for (let i = 0; i < uploadedFiles.length; i++) {
+                // uploadedFiles[i]['showUploading'] = false
+                this.showUploading = false			
+                this.files.push(uploadedFiles[i])
+            }		   
+            console.log (this.files)	
+            console.log(this.files[0].name)	
+            console.log(this.files[0].type)
+        },
+        removeFile (key) {     
+            this.files.splice(key, 1)
+            this.$refs.files.value = null
+        }, 
+        submitFiles(){      
+            if (this.files) {
+                var _this=this
+                for (let i = 0; i < this.files.length; i++) {
+                    
+                    var file = this.files[i]
+                    var fileName = file.name
+                    var albumPhotosKey = encodeURIComponent(this.env.albumName_in) + "/";
+                    var photoKey = albumPhotosKey + fileName;
+
+                    // Use S3 ManagedUpload class as it supports multipart uploads
+                    var upload = new AWS.S3.ManagedUpload({
+                        params: {
+                            Bucket: this.env.albumBucketName,
+                            Key: photoKey,
+                            Body: file,
+                            ACL: "public-read"
+                        }
+                    });
+                    var promise = upload.promise();
+
+                    promise.then(
+                        function(data) {                        
+                            if (i==_this.files.length){
+                                alert("Successfully uploaded photo.");
+                                console.log(data)
+                            }
+                            // viewAlbum(albumName);
+                        },
+                        function(err) {
+                        return alert("There was an error uploading your photo: ", err.message);
+                        }
+                    );
+                } 
+            }        
+            else {
+                alert("Please choose a file to upload first.")
+                }
+        },
+        clearall(){
+            this.files = []
+        },
+        logout(){        
+            this.$router.replace(this.$route.query.redirect || "/logout");        
+        }
+    },    
+    computed: {
+      showSelectedFiles () {
+        return this.files.length > 0
+        },
+    }
+    
+}
+
+</script>
+
+
