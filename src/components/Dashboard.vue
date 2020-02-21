@@ -71,7 +71,7 @@
                     :disabled="showUploading"
                     color="teal"
                     class="white--text"
-                    @click.native="downloadFile()"
+                    @click.native="clearall()"
                   >
                     Clear All
                     <v-icon right dark>clear</v-icon>
@@ -173,127 +173,56 @@
         </v-layout>          
       </section>
 
-        <v-flex xs12 sm6 offset-sm3 v-show="showObjectsBuckets"  id="selectedBuckets" class="text-xs-center">
-            <!-- <v-flex xs12> -->
-            <!-- <input type="file" id="files" ref="files" hidden=true multiple v-on:change="handleFilesUpload()"/> -->
-            <!-- <v-list subheader dense >
+    <section>
+        <v-flex xs12 sm6 offset-sm3 v-show="showObjectsBuckets"  id="selectedBuckets" class="text-xs-center">                      
+             <v-list subheader dense >
                 <v-subheader inset>Folder</v-subheader>
 
                   <v-list-group
                     v-for="(album,key) in albums"
                     :key="key"                      
-                    prepend-icon="folder"                    
+                                      
                     no-action
-                > -->
+                    @click.native="fileAlbum(album)"
+                > 
 
-                 <!-- <template v-slot:activator>
+                 <template v-slot:activator>
                     <v-list-item-content>
-                        <v-list-item-title>{{album}}</v-list-item-title>
-                    </v-list-item-content>
-                      <v-list-item-action> -->
-                    <!-- <v-btn icon ripple @click="deleteAlbum(key)">
-                        <v-icon color="red lighten-1">delete_forever</v-icon>
-                    </v-btn> -->
-                <!-- </v-list-item-action>
-                 </template>                     -->
-               
-                          
-                <!-- <v-list-item 
-                    v-for="(albumfile, key2) in albumsFiles[album]"
-                    :key="key2"
-                    slot="activator"                    
-                >   -->
-                <!-- <v-list-item
-                    v-for="(album,key) in albums"
-                    :key="key"                      
-                    prepend-icon="folder"                    
+                        <v-list-item-title> 
+                          <v-icon color="orange lighten-1 ">folder</v-icon>
+                          {{album}}
+                        </v-list-item-title>
+                    </v-list-item-content>               
+                 </template>                   
+                
+                 <v-list-item
+                    v-for="(albumfile,key2) in albumsFiles"
+                    :key="key2"                             
                     no-action                   
-                > -->
-                    <!-- <v-list-item-avatar>
-                        <v-icon>folder</v-icon>
-                    </v-list-item-avatar>                                  
+                > 
+                     <v-list-item-avatar>
+                        <v-icon color="blue lighten-1 ">insert_drive_file</v-icon>
+                    </v-list-item-avatar>                                          
 
                     <v-list-item-content activator>
-                         <v-list-item-title>{{albumfile}}</v-list-item-title>														 -->
-                        <!-- <v-list-item-title>{{album}}</v-list-item-title>														
+                         <v-list-item-title>{{albumfile[0]}}</v-list-item-title>                       											
                     </v-list-item-content>
                     <v-list-item-action>                       
-                          <v-btn icon ripple @click="fileAlbum(album)">
-                                <v-icon color="red lighten-1">insert_drive_file</v-icon>
-                            </v-btn>                          
+                           <v-btn-toggle multiple>
+                            <v-btn icon ripple @click="downloadFile(albumfile[key2])">
+                                <v-icon color="green lighten-1">cloud_download</v-icon>
+                            </v-btn>    
+                            <v-btn icon ripple @click="deleteFile(albumfile[key2],album)">
+                                <v-icon color="red lighten-1">delete_forever</v-icon>
+                            </v-btn>
+                        </v-btn-toggle>                         
                         
                     </v-list-item-action>
-                </v-list-item>                 --> 
-                <!-- </v-list-group> -->
-            <!-- </v-list>    
-            <v-divider inset></v-divider>
-            <v-list subheader dense >
-                <v-subheader inset>Files of </v-subheader>                
-                <v-list-item
-                    v-for="(albumfile, key2) in albumsFiles"
-                    :key="key2"                    
-                >
-                    <v-list-item-avatar>
-                        <v-icon>insert_drive_file</v-icon>
-                    </v-list-item-avatar>                                  
-
-                    <v-list-item-content activator> -->
-                        <!-- <v-list-item-title>{{albumfile}}</v-list-item-title>														 -->
-                        <!-- <v-list-item-title>{{albumfile[0]}}</v-list-item-title>														
-                    </v-list-item-content>
-                    <v-list-item-action>
-                        <v-btn-toggle multiple>
-                            <v-btn icon ripple @click="downloadFile(albumfile[0])">
-                                <v-icon color="red lighten-1">cloud_download</v-icon>
-                            </v-btn>    
-                            <v-btn icon ripple @click="deleteFile(albumfile[0])">
-                                <v-icon color="red lighten-1">delete_forever</v-icon>
-                            </v-btn>
-                        </v-btn-toggle>
-                    </v-list-item-action>
-                </v-list-item>              
-            </v-list>     --> 
-
-            <v-expansion-panels>
-              <v-expansion-panel
-                v-for="(album,i) in albums"
-                :key="i"
-                @click.native="fileAlbum(album)"
-              >
-                <v-expansion-panel-header class="justify-self-start">
-                  <div>
-                    <v-icon left color="red lighten-1">folder</v-icon>
-                    <span>{{album}}</span>
-                  </div>
-                  </v-expansion-panel-header>
-                <v-expansion-panel-content
-                 v-for="(albumfile, key) in albumsFiles"
-                :key="key"
-                class="justify-self-start"
-                >
-                 <div>
-                    <v-icon left color="blue lighten-1">insert_drive_file</v-icon>
-                    <span> {{albumfile[0]}}</span>
-                  <div class="justify-self-end">
-
-                  <v-btn-toggle multiple>
-                            <v-btn icon ripple @click="downloadFile(albumfile[0])">
-                                <v-icon color="red lighten-1">cloud_download</v-icon>
-                            </v-btn>    
-                            <v-btn icon ripple @click="deleteFile(albumfile[0])">
-                                <v-icon color="red lighten-1">delete_forever</v-icon>
-                            </v-btn>
-                        </v-btn-toggle>               
-                  </div>
-                  </div>  
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
-
-
-
-                    
-        </v-flex>		
+                </v-list-item>                 
+                </v-list-group> 
+             </v-list>                
+        </v-flex>	
+      </section>	
 
 
 
@@ -378,25 +307,26 @@
       // IdentityPoolId: '', 
       s3 : new AWS.S3,
       accessKeyId: '',
-      secretAccessKey: '', 
-      showObjectsBuckets: true,    
+      secretAccessKey: '',
+      sessionToken: '', 
+      showObjectsBuckets: false,    
       selectedFile: null,
       isSelecting: false,
       showUploading: false,
       cognito_idp: '',
       files: [], 
+      albumName_in: 'input'
                        
     }),  
     created(){         
       this.cognito_idp = 'cognito-idp.'+this.env.COGNITO.region+'.amazonaws.com/'+this.env.COGNITO.UserPoolId
       var cognitoUser = this.$cognitoAuth.getCurrentUser();
-      console.log(cognitoUser)
+      
       if (cognitoUser != null) {
         var _this = this
         cognitoUser.getSession(function(err, result) {
           if (result) {
-            console.log('You are now logged in.');
-            console.log(result.getIdToken().getJwtToken())
+            console.log('You are now logged in.');            
             // Add the User's Id Token to the Cognito credentials login map.
               var awsconfig = {}              
               awsconfig[_this.cognito_idp] = result.getIdToken().getJwtToken();
@@ -409,28 +339,31 @@
                             
           }
         })
-      }   
-        AWS.config.credentials.get(function(err){
+        AWS.config.getCredentials(function(err){
         // Credentials will be available when this function is called.
-            if (err) alert("Error: " + err);            
-        });
-        console.log(AWS.config.credentials)      
+            if (err) alert("Error: " + err); 
+            else {              
+            _this.accessKeyId = AWS.config.credentials.accessKeyId
+            _this.secretAccessKey = AWS.config.credentials.secretAccessKey
+            _this.sessionToken = AWS.config.credentials.sessionToken            
+            }
+        });              
+      }   
+
+        
     },
-    methods: {
-      
-        listObjs() {
-            AWS.config.credentials.get(function(err){
-                // Credentials will be available when this function is called.
-                if (err) alert("Error: " + err);            
-            });
-            // console.log(AWS.config.credentials.CognitoIdentityCredentials)
+    methods: {      
+      listObjs() {  
+        this.showObjectsBuckets = true      
+          var _this = this              
+          // AWS.config.credentials = new AWS.Credentials(_this.accessKeyId, _this.secretAccessKey, _this.sessionToken); // Keys returned from STS
+           this.s3.config.update({credentials: AWS.config.credentials})            
             this.albums = []
             this.albumsFiles = []
             var params_alb = {
                 Bucket: this.env.albumBucketName,
                 Delimiter: "/"                 
             };   
-            var _this = this
             //List name of the album inside the bucket
             this.s3.listObjects(params_alb, function(err, data) {
                 if (err) {
@@ -446,32 +379,7 @@
             
             for (let i = 0; i < data.CommonPrefixes.length; i++) {       			
                 this.albums.push(data.CommonPrefixes[i].Prefix)            
-            }    
-            
-            // for (let i = 0; i < this.albums.length; i++) { 
-            //     var params = {
-            //         Bucket: this.env.albumBucketName, /* required */
-            //         Prefix: this.albums[i]  // Can be your folder name
-            //     };
-            //     var _this = this
-            //     if (!this.albumsFiles[params.Prefix]){
-            //         this.albumsFiles[params.Prefix] = []
-            //     }
-            //     // console.log(this.albumsFiles)
-            //     this.s3.listObjects(params, function(err, data) {
-            //         if (err) console.log(err, err.stack); // an error occurred
-            //         else  {
-            //             console.log(data);           // successful response                    
-            //             // console.log(data.Prefix)                         
-            //             for (let x = 1; x < data.Contents.length; x++) {
-            //                 _this.albumsFiles[data.Prefix].push([data.Contents[x].Key])                      
-                            
-            //             }    
-            //             // console.log(_this.albumsFiles)        
-            //         }   
-
-            //     });             
-            // }
+            }           
             console.log(this.albums)            
         },   
         fileAlbum(album){
@@ -486,6 +394,7 @@
                 //     this.albumsFiles[params.Prefix] = []
                 // }
                 // console.log(this.albumsFiles)
+                this.s3.config.update({credentials: AWS.config.credentials})
                 this.s3.listObjects(params, function(err, data) {
                     if (err) console.log(err, err.stack); // an error occurred
                     else  {
@@ -505,55 +414,57 @@
             console.log(this.albumsFiles)
           
         },
-        deleteFile(key){
+        deleteFile(key,album){
+            console.log(key)
+            console.log(album)
             var _this = this            
             var params = {
                 Bucket: this.env.albumBucketName, /* required */
                 Delete: {
                     Objects: [{
-                        Key : this.albumsFiles[key][0]
+                        Key : key
                     }]
                 }
 
             }
+            this.s3.config.update({credentials: AWS.config.credentials})
             this.s3.deleteObjects(params, function(err, data) {
                 if (err) {
                     console.log("There was an error deleting your photo: ", err.message);
                 } 
                     console.log(data)
                     alert("Successfully deleted photo.");
-                    _this.listObjs();
+                    _this.fileAlbum(album);
             });
 
         }, 
-        downloadFile(key){
-          console.log(key)
-          key = 'input/image.png'
+        downloadFile(key){         
             var _this = this          
             var params = {
                 Bucket: this.env.albumBucketName,
                 Key: key
             }                   
-       console.log(key)
+            console.log(key)
 
-       const url = new Promise((resolve, reject) => {
-       this.s3.getSignedUrl('getObject', params, function (err, url) {
-        if (err) {
-          reject(err)
-        }
-        console.log(url)
-        resolve(url)
-      })
-    }).then(function(result){
-      console.log(result)
-      axios({url:result,method:'GET',responseType: 'blob'})
-        .then(response => {
-                _this.forceFileDownload(response,key)  
+            const url = new Promise((resolve, reject) => {
+            this.s3.config.update({credentials: AWS.config.credentials})
+            this.s3.getSignedUrl('getObject', params, function (err, url) {
+              if (err) {
+                reject(err)
+              }
+              console.log(url)
+              resolve(url)
+              })
+            }).then(function(result){
+            console.log(result)
+            axios({url:result,method:'GET',responseType: 'blob'})
+              .then(response => {
+                      _this.forceFileDownload(response,key)  
+                  })
+              .catch(() => console.log('error occured'))
             })
-        .catch(() => console.log('error occured'))
-    })
-   
-    console.log(url.PromiseValue, params.Key)       
+        
+          console.log(url.PromiseValue, params.Key)       
             
         },
         forceFileDownload(response,key){
@@ -591,13 +502,14 @@
             this.$refs.files.value = null
         }, 
         submitFiles(){      
+          console.log(this.files)
             if (this.files) {
                 var _this=this
                 for (let i = 0; i < this.files.length; i++) {
                     
                     var file = this.files[i]
                     var fileName = file.name
-                    var albumPhotosKey = encodeURIComponent(this.env.albumName_in) + "/";
+                    var albumPhotosKey = encodeURIComponent(this.albumName_in) + "/";
                     var photoKey = albumPhotosKey + fileName;
 
                     // Use S3 ManagedUpload class as it supports multipart uploads
@@ -610,7 +522,7 @@
                         }
                     });
                     var promise = upload.promise();
-
+                    console.log("entro")
                     promise.then(
                         function(data) {                        
                             if (i==_this.files.length){
@@ -631,6 +543,7 @@
         },
         clearall(){
             this.files = []
+            this.showObjectsBuckets = false
         },
         logout(){        
             this.$router.replace(this.$route.query.redirect || "/logout");        
