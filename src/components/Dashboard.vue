@@ -1,13 +1,23 @@
 <template>    
   <v-content>    
     <v-card flat tile>
-      <v-toolbar dense color=" blue lighten-4">
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>  
+      <v-toolbar dense>
+        <v-app-bar-nav-icon></v-app-bar-nav-icon>         
         <v-toolbar-title>Make predictions through AWS with SCAR</v-toolbar-title>  
         <v-spacer></v-spacer>  
+        <v-btn tex small @click.native="to_dashboard()">
+          <v-icon color="blue lighten-1">dashboard</v-icon>
+          Dashboard
+        </v-btn>  
+        <v-divider class="mx-4" vertical></v-divider>
+        <v-btn tex small @click.native="to_settings()">
+          <v-icon color="blue lighten-1">settings</v-icon>
+          Settings
+        </v-btn> 
+        <v-divider class="mx-4" vertical></v-divider>
         <v-btn icon @click.native="logout()">
-          <v-icon color="red lighten-1">logout</v-icon>
-        </v-btn>       
+          <v-icon color="blue lighten-1">logout</v-icon>
+        </v-btn>      
       </v-toolbar>
     </v-card>
       <section>
@@ -208,10 +218,10 @@
                     </v-list-item-content>
                     <v-list-item-action>                       
                            <v-btn-toggle multiple>
-                            <v-btn icon ripple @click="downloadFile(albumfile[key2])">
+                            <v-btn icon ripple @click="downloadFile(albumfile[0])">
                                 <v-icon color="green lighten-1">cloud_download</v-icon>
                             </v-btn>    
-                            <v-btn icon ripple @click="deleteFile(albumfile[key2],album)">
+                            <v-btn icon ripple @click="deleteFile(albumfile[0],album)">
                                 <v-icon color="red lighten-1">delete_forever</v-icon>
                             </v-btn>
                         </v-btn-toggle>                         
@@ -414,9 +424,9 @@
             console.log(this.albumsFiles)
           
         },
-        deleteFile(key,album){
+        deleteFile(key){
             console.log(key)
-            console.log(album)
+          
             var _this = this            
             var params = {
                 Bucket: this.env.albumBucketName, /* required */
@@ -434,7 +444,7 @@
                 } 
                     console.log(data)
                     alert("Successfully deleted photo.");
-                    _this.fileAlbum(album);
+                    _this.listObjs();
             });
 
         }, 
@@ -525,20 +535,20 @@
                         }
                     });
                     var promise = upload.promise();
-                    console.log("entro")
+                    console.log(promise)
                     promise.then(
-                        function(data) {                        
-                            if (i==_this.files.length){
-                                alert("Successfully uploaded photo.");
-                                console.log(data)
-                            }
-                            // viewAlbum(albumName);
+                        function(data) {   
+                          // console.log(data)                   
+                          console.log("Successfully uploaded photo."); 
+                          _this.listObjs()           
+                          _this.files = []              
                         },
                         function(err) {
                         return alert("There was an error uploading your photo: ", err.message);
                         }
                     );
                 } 
+              alert("Successfully uploaded photo.");         
             }        
             else {
                 this.errorsfile = true
@@ -546,11 +556,17 @@
                 }
         },
         clearall(){
-            this.files = []
+            this.files = []          
             this.showObjectsBuckets = false
         },
         logout(){        
             this.$router.replace(this.$route.query.redirect || "/logout");        
+        },
+        to_dashboard(){
+          this.$router.replace(this.$route.query.redirect || "/dashboard"); 
+        },
+        to_settings(){
+          this.$router.replace(this.$route.query.redirect || "/settings"); 
         }
     },    
     computed: {

@@ -11,7 +11,7 @@
 <script>
 // import Dashboard from './components/Dashboard';
 // import Login from './components/auth/login/Login';
-// import jwtDecode from "jwt-decode";
+import jwtDecode from "jwt-decode";
 export default {
   name: 'App',
 
@@ -30,29 +30,29 @@ export default {
     }
   },
   created() {
-    //  this.$cognitoAuth.getIdToken((err, jwtToken) => {
-		// if (err) {
-		// 	console.log("Dashboard: Couldn't get the session:", err, err.stack);
-		// 	return;
-		// }
-		// this.token = jwtDecode(jwtToken);		
-		// this.user = this.$cognitoAuth.getCurrentUser();
-		// document.getElementsByName("token")["0"].content = jwtToken;
-		// //console.log(jwtToken)
-		// });
+     this.$cognitoAuth.getIdToken((err, jwtToken) => {
+		if (err) {
+			console.log("Dashboard: Couldn't get the session:", err, err.stack);
+			return;
+		}
+		this.token = jwtDecode(jwtToken);		
+		this.user = this.$cognitoAuth.getCurrentUser();
+		document.getElementsByName("token")["0"].content = jwtToken;
+		//console.log(jwtToken)
+		});
 
-    // this.$cognitoAuth.isAuthenticated((err, loggedIn) => { 
-    //   if (err) {
-    //     console.log("App: Couldn't get the session:", err, err.stack);
-		// 		return;
-		// 	} 
-		// 	this.loggedIn = loggedIn;    
-		// 	// this.$eventHub.$emit('check-login',this.loggedIn);
-		// });
-		// this.$cognitoAuth.onChange = loggedIn => {
-    //     this.loggedIn = loggedIn;        
-		// // this.$eventHub.$emit('check-login',this.loggedIn);	
-		// };			
+    this.$cognitoAuth.isAuthenticated((err, loggedIn) => { 
+      if (err) {
+        console.log("App: Couldn't get the session:", err, err.stack);
+				return;
+			} 
+			this.loggedIn = loggedIn;    
+			// this.$eventHub.$emit('check-login',this.loggedIn);
+		});
+		this.$cognitoAuth.onChange = loggedIn => {
+        this.loggedIn = loggedIn;        
+		// this.$eventHub.$emit('check-login',this.loggedIn);	
+		};			
   },
   mounted() {
 		if (typeof localStorage.getItem("session") != "undefined") {

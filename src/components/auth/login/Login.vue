@@ -78,8 +78,8 @@ export default {
 					document.getElementsByName("token")["0"].content = jwtToken;
       });
         localStorage.setItem("session",JSON.stringify({ user: { username: this.model.username, token: this.token_auth } }));
-        this.$router.replace(this.$route.query.redirect || "/dashboard");
-        console.log("llego aqui")
+        this.$router.replace(this.$route.query.redirect || "/settings");
+        
 				}
 		});
     //   if (this.model.username == this.user && this.model.password == this.pass ){

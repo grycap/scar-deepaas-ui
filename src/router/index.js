@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import cognitoAuth from '@/cognito'
 import Login from '@/components/auth/login/Login.vue'
 import Dashboard from '@/components/Dashboard.vue'
+import Settings from '@/components/Settings.vue'
 
 Vue.use(Router)
 
@@ -27,6 +28,7 @@ function requireAuth (to, from, next) {
     routes: [
       { path: '/', component: Login, beforeEnter: requireAuth  },
       { path: '/dashboard', component: Dashboard, beforeEnter: requireAuth },
+      {path : '/settings', component: Settings, beforeEnter: requireAuth },
       { path: '/login', component: Login},
             
       // { path: '/curso_cloud_aws', component: Cursocloudaws },
