@@ -566,7 +566,7 @@
           this.$router.replace(this.$route.query.redirect || "/dashboard"); 
         },
         to_settings(){
-          this.$router.replace(this.$route.query.redirect || "/settings"); 
+          this.$router.replace(this.$route.query.redirect || "/callback"); 
         }
     },    
     computed: {

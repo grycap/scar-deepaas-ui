@@ -20,6 +20,7 @@
               <v-card-actions>                
                 <v-btn block color="primary" @click.native="login()" :loading="loading">Login</v-btn>
               </v-card-actions>
+                <v-btn block color="primary" @click.native="loginwithOpenId()">Login with OpenId</v-btn>
             </v-card>
           </v-flex>
         </v-layout>
@@ -30,6 +31,7 @@
 
 <script>
 import jwtDecode from "jwt-decode";
+import Oidc from 'oidc-client'
 export default {
   data: () => ({
     loading: false,
@@ -55,7 +57,22 @@ export default {
         this.login()
       } 
     },
-    login () {
+    loginwithOpenId(){
+      var client_id = 'fdab5b94-5300-4349-8487-2739af274110';
+      var client_secret = 'Qf4KJMQKVrapXgtpWKoNE7WchuKr3zq92QHAajoVnRnOWEKoTB4-xYgGcXnk5GD2FC3kuATHLutKGTo6WGlZfA';
+      var redirect_uri = window.location.origin + '/callback';
+      var url = 
+        'https://iam.deep-hybrid-datacloud.eu/authorize'
+        + '?response_type=token id_token'
+        + '&scope=openid profile'       
+        + '&nonce=abc'
+        + '&client_id=' + client_id 
+        // + '&client_secret=' + client_secret 
+        + '&redirect_uri=' + redirect_uri;    
+      
+      window.location.replace(url)
+    },
+    login () {     
 		this.loading = true
 		this.$cognitoAuth.signin(this.model.username, this.model.password, (err, result) => {
 			console.log(result)

@@ -4,6 +4,7 @@ import cognitoAuth from '@/cognito'
 import Login from '@/components/auth/login/Login.vue'
 import Dashboard from '@/components/Dashboard.vue'
 import Settings from '@/components/Settings.vue'
+import Callback from '@/components/Callback.vue'
 
 Vue.use(Router)
 
@@ -22,17 +23,18 @@ function requireAuth (to, from, next) {
   }
 
   export default new Router({
-    linkActiveClass: 'active',
-    // mode: 'history',
+    linkActiveClass: 'active', 
+    mode: 'history',
     base: __dirname,
     routes: [
+      { path: '', component: Login, beforeEnter: requireAuth  },
       { path: '/', component: Login, beforeEnter: requireAuth  },
       { path: '/dashboard', component: Dashboard, beforeEnter: requireAuth },
       {path : '/settings', component: Settings, beforeEnter: requireAuth },
+      {path : '/callback', component: Callback},
       { path: '/login', component: Login},
             
-      // { path: '/curso_cloud_aws', component: Cursocloudaws },
-       { path: '/logout',
+      { path: '/logout',
         beforeEnter (to, from, next) {
           cognitoAuth.logout();         
           next('/login')
