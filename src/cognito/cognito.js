@@ -29,8 +29,7 @@ export default class CognitoAuth {
   isAuthenticated (cb) {
     let cognitoUser = this.getCurrentUser()
     if (cognitoUser != null) {
-      cognitoUser.getSession((err, session) => {
-        console.log(session)
+      cognitoUser.getSession((err, session) => {        
         if (err) {
           return cb(err, false)
         }

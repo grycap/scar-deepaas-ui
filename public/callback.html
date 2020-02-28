@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Callback page</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900' rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@3.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+</head>
+<body>
+ <div id="app">
+   <v-app light>
+    <v-content>    
+        <v-card flat tile>
+          <v-toolbar dense>
+            <v-app-bar-nav-icon></v-app-bar-nav-icon>         
+            <v-toolbar-title>Make predictions through AWS with SCAR</v-toolbar-title>             
+          </v-toolbar>
+        </v-card>
+          <section>
+            <v-parallax src="/callback_img/fondoazul.jpg" height="500" alt="700">
+              <!-- <v-spacer></v-spacer> -->
+              <v-layout
+                column
+                align-center
+                justify-center
+                class="white--text"
+              >       
+                
+              <img src="/callback_img/fondo1.png" height="100%">            
+              </v-layout>
+            </v-parallax>
+          </section>
+    
+          <section>
+              <v-layout column  wrap align-center class="my-12">
+                <v-flex xs12 sm4 class="my-4">
+                        <div class="text-center">
+                            <h2 class="headline">You are going to be redirected to Dashboard in:</h2>
+                            <span style="width: 300px; height: 300px; font-size: 48px;">
+                                    {{countDown}}
+                            </span>  
+                                  
+                        </div>
+                </v-flex>                  
+              </v-layout>
+          </section>
+    
+         
+          
+          <section>
+            <v-container grid-list-xl>
+              <v-layout row wrap justify-center class="my-12">
+                <v-flex xs12 sm4>
+                  <v-card flat class="transparent">
+                    <v-card-title primary-title class="layout justify-center">
+                      <div class="headline">Application info</div>
+                    </v-card-title>
+                    <v-card-text>
+                      This application allows you to load an image to obtain the prediction 
+                      of it through a machine learning model available from Amazon Web Services.
+                    </v-card-text>
+                  </v-card>
+                </v-flex>
+                <v-flex xs12 sm4 offset-sm1>
+                  <v-card flat class="transparent">
+                    <v-card-title primary-title class="layout justify-center">
+                      <div class="headline">Contact us</div>
+                    </v-card-title>
+                    <v-card-text>
+                      Grupo de Grid y Computación de Altas Prestaciones (GRyCAP)
+                    </v-card-text>
+                    <v-list class="transparent">
+                      <v-list-item>
+                        <v-list-item-action>
+                          <v-icon class="blue--text text--lighten-2">mdi-phone</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                          <v-list-item-title>(+34) 963877356</v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-list-item-action>
+                          <v-icon class="blue--text text--lighten-2">mdi-map-marker</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                          <v-list-item-title>Valencia, Spain</v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-list-item>
+                        <v-list-item-action>
+                          <v-icon class="blue--text text--lighten-2">mdi-email</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                          <v-list-item-title>grycap@grycap.upv.es</v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-list>
+                  </v-card>
+                </v-flex>            
+              </v-layout>
+            </v-container>
+          </section>
+    
+          <v-footer color="blue darken-2">
+            <v-layout row wrap align-center>
+              <v-flex xs12>
+                <div class="white--text ml-4">
+                  <h5>© 2020, <a style="color:#ff9966;" href="https://www.grycap.upv.es">GRyCAP-I3M-UPV</a>, Universitat Politècnica de Valéncia, Spain.</h5>               </div>
+              </v-flex>
+            </v-layout>
+          </v-footer>
+        </v-content>
+  </v-app>
+ </div>
+ <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+ <script>
+   new Vue({
+    el: '#app',
+    vuetify: new Vuetify(),
+    data: () => ({
+        countDown: 3
+    }),  
+    created(){  
+        var url = window.location.href;
+            console.log(url)
+        var _this = this    
+
+        // Check if there was an error parameter
+        var error = url.match('error=([^&]*)')
+        if (error) {
+            // If so, extract the error description and display it
+            var description = url.match('error_description=([^&]*)')
+            console.log('Error: ' + error[1] + '<br>Description: ' + description[1] + '</br>');
+            return;
+        }
+
+        // Extract id token from the id_token parameter
+        var match = url.match('id_token=([^&]*)');
+        if (match) {
+            var id_token = match[1]; // String captured by ([^&]*)
+
+            // Make AWS request using the id token
+            if (id_token) {
+                console.log(id_token);                
+                localStorage.setItem("token_id",JSON.stringify({ 'token_id': id_token }));
+                // makeCognitoRequest(id_token);
+                // this.$router.replace(this.$route.query.redirect || "/settings")
+                // setTimeout( () => this.$router.push({ path: '/login'}), 5000);
+                this.countDownTimer()
+                
+            }else{
+                console.log('Error: Could not retrieve id token from the URL');
+            }
+        }else{
+            console.log('Error: There was no id token in the URL');
+        }        
+    },   
+    methods: {
+            countDownTimer() {
+                if(this.countDown > 0) {
+                    setTimeout(() => {
+                        this.countDown -= 1
+                        this.countDownTimer()
+                    }, 1000)
+                }else{
+                    console.log(window.location.origin)
+                    var url_redirect =  window.location.origin + "/dashboard"                
+                    window.location.href = url_redirect
+                }
+            }
+        }
+   
+  })
+ </script>
+ <style>
+     .base-timer {
+  position: relative;
+  height: 300px;
+  width: 300px;
+}
+
+/* Removes SVG styling that would hide the time label */
+.base-timer__circle {
+  fill: none;
+  stroke: none;
+}
+
+/* The SVG path that displays the timer's progress */
+.base-timer__path-elapsed {
+  stroke-width: 7px;
+  stroke: grey;
+}
+
+.base-timer__label {
+  position: absolute;
+  
+  /* Size should match the parent container */
+  width: 300px;
+  height: 300px;
+  
+  /* Keep the label aligned to the top */
+  top: 0;
+  
+  /* Create a flexible box that centers content vertically and horizontally */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Sort of an arbitrary number; adjust to your liking */
+  font-size: 48px;
+}
+ </style>
+</body>
+</html>

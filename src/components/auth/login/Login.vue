@@ -11,10 +11,13 @@
                   <!-- <h1 class="flex my-4 primary--text">AWS + Machine Learning</h1> -->
                 </div>
                 <v-form>
-                  <v-text-field append-icon="person" name="login" label="Login" type="text"
-                                v-model="model.username"></v-text-field>
+                  <v-text-field append-icon="person" name="login" label="Username" type="text"
+                                v-model="model.username" required></v-text-field>
+        				  <span v-show="mistake.username" style="color: #cc3300; font-size: 12px;"><b>Username is required</b></span>
+
                   <v-text-field append-icon="lock" name="password" label="Password" id="password" type="password"
-                                v-model="model.password" v-on:keyup="bindLogin()"></v-text-field>
+                                v-model="model.password" v-on:keyup="bindLogin()" required></v-text-field>
+         					<span v-show="mistake.password" style="color: #cc3300; font-size: 12px;"><b>Password is required</b></span>
                 </v-form>
               </v-card-text>
               <v-card-actions>                
@@ -31,7 +34,6 @@
 
 <script>
 import jwtDecode from "jwt-decode";
-import Oidc from 'oidc-client'
 export default {
   data: () => ({
     loading: false,
@@ -39,6 +41,10 @@ export default {
       username: '',
       password: ''
     }, 
+    mistake: {
+      username: false,
+      password: false
+    },
     token_auth : '',
     token : '',
   
@@ -48,6 +54,7 @@ export default {
     // localStorage.setItem("authenticated", false);    
     document.getElementsByName('token')['0'].content = '';
     localStorage.removeItem('session');
+    localStorage.removeItem('token_id');
   },
 
   methods: {
@@ -60,7 +67,7 @@ export default {
     loginwithOpenId(){
       var client_id = 'fdab5b94-5300-4349-8487-2739af274110';
       var client_secret = 'Qf4KJMQKVrapXgtpWKoNE7WchuKr3zq92QHAajoVnRnOWEKoTB4-xYgGcXnk5GD2FC3kuATHLutKGTo6WGlZfA';
-      var redirect_uri = window.location.origin + '/callback';
+      var redirect_uri = window.location.origin + '/callback.html';
       var url = 
         'https://iam.deep-hybrid-datacloud.eu/authorize'
         + '?response_type=token id_token'
@@ -73,17 +80,30 @@ export default {
       window.location.replace(url)
     },
     login () {     
-		this.loading = true
+    
+    if (this.model.username == ""){
+        this.mistake.username = true
+    }else {
+        this.mistake.username = false       
+    }
+
+    if(this.model.password == ""){
+        this.mistake.password = true    
+    }
+    else{
+        this.mistake.password = false
+    }
+
+    if (this.model.username != "" && this.model.password != ""){
+    this.loading = true
 		this.$cognitoAuth.signin(this.model.username, this.model.password, (err, result) => {
 			console.log(result)
-			if (err) {
-				console.log(err)
-				// this.processing = false;
-				// this.error = true;
-				// this.error_message_text = err.message;
+			if (err) {				
+				this.loading = false;				
+				alert ("Error: " + err.message)
 			} else {
 				// $(".users-dropdown").text(this.model.username);
-				localStorage.setItem("session",JSON.stringify({ user: { username: this.model.username } }));
+				// localStorage.setItem("session",JSON.stringify({ user: { username: this.model.username } }));
 				this.$cognitoAuth.getIdToken((err, jwtToken) => {
 				if (err) {
 				console.log("Dashboard: Couldn't get the session:",err,err.stack);
@@ -98,16 +118,8 @@ export default {
         this.$router.replace(this.$route.query.redirect || "/settings");
         
 				}
-		});
-    //   if (this.model.username == this.user && this.model.password == this.pass ){
-    //     // var _this = this
-    //     localStorage.setItem("authenticated", true);
-    //     // window.location.href = "/dashboard"
-    //     this.$router.push({name: "Dashboard"})        
-    //   }else{
-    //     this.loading = false
-    //      window.getApp.$emit('APP_SHOW_SNACKBAR', { text: "Username or password is incorrect", color: 'error' })
-    //   }
+    });               
+    }
     }
   }
 

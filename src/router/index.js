@@ -11,6 +11,7 @@ Vue.use(Router)
 function requireAuth (to, from, next) {
     cognitoAuth.isAuthenticated((err, loggedIn) => {
       if (err) return next()
+      console.log(loggedIn)
       if (!loggedIn) {
         next({
           path: '/login',
@@ -24,7 +25,7 @@ function requireAuth (to, from, next) {
 
   export default new Router({
     linkActiveClass: 'active', 
-    mode: 'history',
+    // mode: 'history',
     base: __dirname,
     routes: [
       { path: '', component: Login, beforeEnter: requireAuth  },
@@ -40,6 +41,8 @@ function requireAuth (to, from, next) {
           next('/login')
           document.getElementsByName('token')['0'].content = '';
           localStorage.removeItem('session');
+          localStorage.removeItem('token_id');
+          localStorage.clear()
         }
       }
     ]

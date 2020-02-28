@@ -328,7 +328,8 @@
       errorsfile: false
                        
     }),  
-    created(){         
+    created(){     
+
       this.cognito_idp = 'cognito-idp.'+this.env.COGNITO.region+'.amazonaws.com/'+this.env.COGNITO.UserPoolId
       var cognitoUser = this.$cognitoAuth.getCurrentUser();
       
@@ -338,8 +339,16 @@
           if (result) {
             console.log('You are now logged in.');            
             // Add the User's Id Token to the Cognito credentials login map.
-              var awsconfig = {}              
-              awsconfig[_this.cognito_idp] = result.getIdToken().getJwtToken();
+              var awsconfig = {}  
+              var id_token = JSON.parse(localStorage.getItem("token_id"));
+              var provider_url = _this.env.provider_url
+              console.log(id_token.token_id)           
+              if (id_token){
+                  awsconfig[provider_url]=id_token.token_id
+              }else {
+                awsconfig[_this.cognito_idp] = result.getIdToken().getJwtToken();
+              } 
+              console.log(awsconfig)
              
               AWS.config.region = 'us-east-1';
               AWS.config.credentials = new AWS.CognitoIdentityCredentials({
