@@ -20,10 +20,23 @@
          					<span v-show="mistake.password" style="color: #cc3300; font-size: 12px;"><b>Password is required</b></span>
                 </v-form>
               </v-card-text>
-              <v-card-actions>                
-                <v-btn block color="primary" @click.native="login()" :loading="loading">Login</v-btn>
+              <v-card-actions>     
+                <v-btn block color="primary" @click.native="login()" :loading="loading">Sign in</v-btn>
               </v-card-actions>
-                <v-btn block color="primary" @click.native="loginwithOpenId()">Login with OpenId</v-btn>
+              <v-card-actions class='justify-center'>
+                <span style="color:#BDBDBD">Or sign in with INDIGO IAM</span>
+              </v-card-actions>
+              <v-card-actions class='justify-center'>
+                 <v-btn width="auto" height="auto" color="cyan lighten-4" @click.native="loginwithOpenId()">
+                    <v-avatar
+                        size="70px"
+                         height="50"
+                         tile
+                    >
+                      <img src="@/assets/logo-deep.png" alt="" width="200">
+                    </v-avatar>
+                  </v-btn>
+              </v-card-actions>
             </v-card>
           </v-flex>
         </v-layout>
@@ -54,7 +67,7 @@ export default {
     // localStorage.setItem("authenticated", false);    
     document.getElementsByName('token')['0'].content = '';
     localStorage.removeItem('session');
-    localStorage.removeItem('token_id');
+    // localStorage.removeItem('token_id');
   },
 
   methods: {
@@ -65,17 +78,13 @@ export default {
       } 
     },
     loginwithOpenId(){
-      var client_id = 'fdab5b94-5300-4349-8487-2739af274110';
-      var client_secret = 'Qf4KJMQKVrapXgtpWKoNE7WchuKr3zq92QHAajoVnRnOWEKoTB4-xYgGcXnk5GD2FC3kuATHLutKGTo6WGlZfA';
-      var redirect_uri = window.location.origin + '/callback.html';
       var url = 
         'https://iam.deep-hybrid-datacloud.eu/authorize'
         + '?response_type=token id_token'
         + '&scope=openid profile'       
         + '&nonce=abc'
-        + '&client_id=' + client_id 
-        // + '&client_secret=' + client_secret 
-        + '&redirect_uri=' + redirect_uri;    
+        + '&client_id=' + this.env.client_id 
+        + '&redirect_uri=' + this.env.redirect_uri;    
       
       window.location.replace(url)
     },
@@ -102,8 +111,6 @@ export default {
 				this.loading = false;				
 				alert ("Error: " + err.message)
 			} else {
-				// $(".users-dropdown").text(this.model.username);
-				// localStorage.setItem("session",JSON.stringify({ user: { username: this.model.username } }));
 				this.$cognitoAuth.getIdToken((err, jwtToken) => {
 				if (err) {
 				console.log("Dashboard: Couldn't get the session:",err,err.stack);
@@ -115,7 +122,7 @@ export default {
 					document.getElementsByName("token")["0"].content = jwtToken;
       });
         localStorage.setItem("session",JSON.stringify({ user: { username: this.model.username, token: this.token_auth } }));
-        this.$router.replace(this.$route.query.redirect || "/settings");
+        this.$router.replace(this.$route.query.redirect || "/dashboard");
         
 				}
     });               

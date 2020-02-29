@@ -9,18 +9,25 @@ import Callback from '@/components/Callback.vue'
 Vue.use(Router)
 
 function requireAuth (to, from, next) {
-    cognitoAuth.isAuthenticated((err, loggedIn) => {
-      if (err) return next()
-      console.log(loggedIn)
-      if (!loggedIn) {
-        next({
-          path: '/login',
-          query: { redirect: to.fullPath }
-        })
-      } else {
-        next()
-      }
-    })
+    var id_token = JSON.parse(localStorage.getItem("token_id"));
+    console.log(id_token != null)
+    if (id_token != null){
+      next()
+    }else {
+      cognitoAuth.isAuthenticated((err, loggedIn) => {
+        if (err) return next()
+        console.log(loggedIn)
+        if (!loggedIn) {
+          next({
+            path: '/login',
+            query: { redirect: to.fullPath }
+          })
+        } else {
+          next()
+        }
+      })
+    }
+
   }
 
   export default new Router({
@@ -37,7 +44,10 @@ function requireAuth (to, from, next) {
             
       { path: '/logout',
         beforeEnter (to, from, next) {
-          cognitoAuth.logout();         
+          var id_token = JSON.parse(localStorage.getItem("token_id"));
+          if (id_token == null){
+            cognitoAuth.logout();         
+          }
           next('/login')
           document.getElementsByName('token')['0'].content = '';
           localStorage.removeItem('session');

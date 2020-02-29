@@ -6,4 +6,5 @@ module.exports = {
     },   
     albumBucketName : 'xxxxxxxx', // Enter your bucket name    
     IdentityPoolId : "xxxxx:xxxxxxxxxxxxxxx", 
+    provider_url: 'xxxxxxxxxxxxxxxxxxxxxxxxx'
 }

@@ -306,14 +306,12 @@
  import AWS from 'aws-sdk'
  import axios from 'axios'
  
-//  import env from '../env.js'
   export default {
     data: () => ({
       albumName : '',
       albums: [],
       albumsFiles: [],     
-      // bucketRegion: '',
-      // IdentityPoolId: '', 
+     
       s3 : new AWS.S3,
       accessKeyId: '',
       secretAccessKey: '',
@@ -331,33 +329,22 @@
     created(){     
 
       this.cognito_idp = 'cognito-idp.'+this.env.COGNITO.region+'.amazonaws.com/'+this.env.COGNITO.UserPoolId
-      var cognitoUser = this.$cognitoAuth.getCurrentUser();
+      var _this = this
+      var awsconfig = {}  
+      var id_token = JSON.parse(localStorage.getItem("token_id"));
+      var provider_url = _this.env.provider_url      
+                    
+      if (id_token){
+        awsconfig[provider_url]=id_token.token_id
+      }else {
+        awsconfig[_this.cognito_idp] = document.getElementsByName("token")["0"].content;
+      } 
+      AWS.config.region = 'us-east-1';
+      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: _this.env.IdentityPoolId,
+        Logins: awsconfig
+      });      
       
-      if (cognitoUser != null) {
-        var _this = this
-        cognitoUser.getSession(function(err, result) {
-          if (result) {
-            console.log('You are now logged in.');            
-            // Add the User's Id Token to the Cognito credentials login map.
-              var awsconfig = {}  
-              var id_token = JSON.parse(localStorage.getItem("token_id"));
-              var provider_url = _this.env.provider_url
-              console.log(id_token.token_id)           
-              if (id_token){
-                  awsconfig[provider_url]=id_token.token_id
-              }else {
-                awsconfig[_this.cognito_idp] = result.getIdToken().getJwtToken();
-              } 
-              console.log(awsconfig)
-             
-              AWS.config.region = 'us-east-1';
-              AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-              IdentityPoolId: _this.env.IdentityPoolId,
-              Logins: awsconfig
-              });      
-                            
-          }
-        })
         AWS.config.getCredentials(function(err){
         // Credentials will be available when this function is called.
             if (err) alert("Error: " + err); 
@@ -367,7 +354,7 @@
             _this.sessionToken = AWS.config.credentials.sessionToken            
             }
         });              
-      }   
+      
 
         
     },
@@ -387,11 +374,10 @@
             this.s3.listObjects(params_alb, function(err, data) {
                 if (err) {
                     console.log("There was an error listing your albums: " + err.message);
-                    // _this.logout()
+                    _this.logout()  //go to logout when error because that is the expire credentials
                 } else {
-                    console.log(data)
                     _this.data_album(data)                 
-                    }
+                }
             });      
         }, 
         data_album(data) {         
@@ -402,40 +388,27 @@
             console.log(this.albums)            
         },   
         fileAlbum(album){
-          // for (let i = 0; i < this.albums.length; i++) { 
+          
                 this.albumsFiles = []
                 var params = {
                     Bucket: this.env.albumBucketName, /* required */
                     Prefix: album  // Can be your folder name
                 };
                 var _this = this
-                // if (!this.albumsFiles[params.Prefix]){
-                //     this.albumsFiles[params.Prefix] = []
-                // }
-                // console.log(this.albumsFiles)
+               
                 this.s3.config.update({credentials: AWS.config.credentials})
                 this.s3.listObjects(params, function(err, data) {
                     if (err) console.log(err, err.stack); // an error occurred
                     else  {
-                        console.log(data.Contents.length);           // successful response                    
-                        // console.log(data.Prefix)                         
                         for (let x = 1; x < data.Contents.length; x++) {
-                            // _this.albumsFiles[data.Prefix].push([data.Contents[x].Key])     
-                            console.log(data.Contents[x].Key)                 
                             _this.albumsFiles.push([data.Contents[x].Key])                      
-                            
                         }    
                         console.log(_this.albumsFiles)        
                     }   
-
                 });             
             // }
-            console.log(this.albumsFiles)
-          
         },
         deleteFile(key){
-            console.log(key)
-          
             var _this = this            
             var params = {
                 Bucket: this.env.albumBucketName, /* required */
@@ -444,14 +417,13 @@
                         Key : key
                     }]
                 }
-
             }
             this.s3.config.update({credentials: AWS.config.credentials})
             this.s3.deleteObjects(params, function(err, data) {
                 if (err) {
                     console.log("There was an error deleting your photo: ", err.message);
+                    _this.logout() //expire credentials
                 } 
-                    console.log(data)
                     alert("Successfully deleted photo.");
                     _this.listObjs();
             });
@@ -463,28 +435,21 @@
                 Bucket: this.env.albumBucketName,
                 Key: key
             }                   
-            console.log(key)
-
             const url = new Promise((resolve, reject) => {
             this.s3.config.update({credentials: AWS.config.credentials})
             this.s3.getSignedUrl('getObject', params, function (err, url) {
               if (err) {
                 reject(err)
               }
-              console.log(url)
               resolve(url)
               })
             }).then(function(result){
-            console.log(result)
             axios({url:result,method:'GET',responseType: 'blob'})
               .then(response => {
                       _this.forceFileDownload(response,key)  
                   })
               .catch(() => console.log('error occured'))
             })
-        
-          console.log(url.PromiseValue, params.Key)       
-            
         },
         forceFileDownload(response,key){
             console.log(response)
@@ -500,7 +465,6 @@
             this.$refs.files.click()            
         },
         handleFilesUpload () {
-            // this.files = []   
             this.errorsfile = false            
             this.isSelecting = false
             let uploadedFiles = this.$refs.files.files			
@@ -509,13 +473,9 @@
                 Adds the uploaded file to the files array
             */
             for (let i = 0; i < uploadedFiles.length; i++) {
-                // uploadedFiles[i]['showUploading'] = false
                 this.showUploading = false			
                 this.files.push(uploadedFiles[i])
             }		   
-            console.log (this.files)	
-            console.log(this.files[0].name)	
-            console.log(this.files[0].type)
         },
         removeFile (key) {     
             this.files.splice(key, 1)
@@ -547,8 +507,6 @@
                     console.log(promise)
                     promise.then(
                         function(data) {   
-                          // console.log(data)                   
-                          console.log("Successfully uploaded photo."); 
                           _this.listObjs()           
                           _this.files = []              
                         },
@@ -561,7 +519,6 @@
             }        
             else {
                 this.errorsfile = true
-                // alert("Please choose a file to upload first.")
                 }
         },
         clearall(){
@@ -575,7 +532,7 @@
           this.$router.replace(this.$route.query.redirect || "/dashboard"); 
         },
         to_settings(){
-          this.$router.replace(this.$route.query.redirect || "/callback"); 
+          this.$router.replace(this.$route.query.redirect || "/settings"); 
         }
     },    
     computed: {
@@ -583,7 +540,6 @@
         return this.files.length > 0
         },
     }
-    
 }
 
 </script>

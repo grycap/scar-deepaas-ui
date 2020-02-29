@@ -41,25 +41,25 @@ export default {
 		// //console.log(jwtToken)
 		// });
 
-    this.$cognitoAuth.isAuthenticated((err, loggedIn) => { 
-      if (err) {
-        console.log("App: Couldn't get the session:", err, err.stack);
-				return;
-			} 
-      this.loggedIn = loggedIn;   
-      console.log(loggedIn) 
-			// this.$eventHub.$emit('check-login',this.loggedIn);
-		});
-		this.$cognitoAuth.onChange = loggedIn => {
-        this.loggedIn = loggedIn;        
-		// this.$eventHub.$emit('check-login',this.loggedIn);	
-		};			
+    // this.$cognitoAuth.isAuthenticated((err, loggedIn) => { 
+    //   if (err) {
+    //     console.log("App: Couldn't get the session:", err, err.stack);
+		// 		return;
+		// 	} 
+    //   this.loggedIn = loggedIn;   
+    //   console.log(loggedIn) 
+		// 	// this.$eventHub.$emit('check-login',this.loggedIn);
+		// });
+		// this.$cognitoAuth.onChange = loggedIn => {
+    //     this.loggedIn = loggedIn;        
+		// // this.$eventHub.$emit('check-login',this.loggedIn);	
+		// };			
   },
   mounted() {
 		if (typeof localStorage.getItem("session") != "undefined") {
       var session = JSON.parse(localStorage.getItem("session"));
       var token_id = JSON.parse(localStorage.getItem("token_id"));
-			if (session != null && token_id != null && typeof session.user != "undefined") {
+			if ((session != null  && typeof session.user != "undefined" ) || token_id != null) {
         this.loggedIn = true;
 				//console.log(session.user.username);
 				// $(".users-dropdown").text(session.user.username);
