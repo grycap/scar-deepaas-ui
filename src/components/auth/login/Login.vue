@@ -24,18 +24,13 @@
                 <v-btn block color="primary" @click.native="login()" :loading="loading">Sign in</v-btn>
               </v-card-actions>
               <v-card-actions class='justify-center'>
-                <span style="color:#BDBDBD">Or sign in with INDIGO IAM</span>
+                <span style="color:#BDBDBD">Or sign in with</span>
               </v-card-actions>
               <v-card-actions class='justify-center'>
-                 <v-btn width="auto" height="auto" color="cyan lighten-4" @click.native="loginwithOpenId()">
-                    <v-avatar
-                        size="70px"
-                         height="50"
-                         tile
-                    >
-                      <img src="@/assets/logo-deep.png" alt="" width="200">
-                    </v-avatar>
-                  </v-btn>
+                      <img src="@/assets/logo-deep.png" alt="" width="150">
+              </v-card-actions>
+              <v-card-actions class='justify-center'>                
+                <v-btn outlined color="indigo" @click.native="loginwithOpenId()" >INDIGO IAM</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
