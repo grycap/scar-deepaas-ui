@@ -1,4 +1,4 @@
-# ui-deepaas-scar
+# scar-deepaas-ui
 
 ## Project setup
 ```
