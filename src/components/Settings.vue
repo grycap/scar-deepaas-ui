@@ -1,23 +1,44 @@
 <template>    
   <v-content>    
     <v-card flat tile>
-      <v-toolbar dense>
+       <v-toolbar dense>
         <v-app-bar-nav-icon></v-app-bar-nav-icon>         
-        <v-toolbar-title>Make predictions through AWS with SCAR</v-toolbar-title>  
-        <v-spacer></v-spacer>  
-        <v-btn tex small @click.native="to_dashboard()">
-          <v-icon color="blue lighten-1">dashboard</v-icon>
-          Dashboard
-        </v-btn>  
-        <v-divider class="mx-4" vertical></v-divider>
-        <v-btn tex small @click.native="to_settings()">
-          <v-icon color="blue lighten-1">settings</v-icon>
-          Settings
-        </v-btn> 
-        <v-divider class="mx-4" vertical></v-divider>
-        <v-btn icon @click.native="logout()">
-          <v-icon color="blue lighten-1">logout</v-icon>
-        </v-btn>      
+        <v-toolbar-title class="hidden-sm-and-down">Make predictions through AWS with SCAR</v-toolbar-title>  
+        <v-spacer></v-spacer>
+        <v-toolbar-items >
+          <v-row xs4 justify="end">          
+            <v-btn-toggle            
+            dense
+            group
+            multiple 
+            class="align-center"           
+            >
+
+            <v-btn  @click.native="to_dashboard()">
+              <v-icon color="blue lighten-1">dashboard</v-icon>
+              Dashboard
+            </v-btn>              
+            <v-btn   @click.native="to_settings()">
+              <v-icon  color="blue lighten-1">settings</v-icon>
+              Settings
+            </v-btn>            
+             <v-menu offset-y>
+              <template v-slot:activator="{ on }">
+                <v-btn                                    
+                  v-on="on"
+                >
+                <v-icon color="red lighten-1">mdi-account-circle</v-icon>
+                  {{user}}
+                </v-btn>
+              </template>             
+              <v-btn  @click.native="logout()">
+              <v-icon color="blue lighten-1">logout</v-icon>
+              Log Out
+            </v-btn>      
+            </v-menu>
+            </v-btn-toggle>
+          </v-row>  
+        </v-toolbar-items>
       </v-toolbar>
     </v-card>
       <section>
@@ -182,6 +203,7 @@
         identity: null,
         errorMessages:'',   
         formHasErrors: false,  
+        user: ""
     }),  
     created(){         
      

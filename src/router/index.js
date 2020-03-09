@@ -4,7 +4,7 @@ import cognitoAuth from '@/cognito'
 import Login from '@/components/auth/login/Login.vue'
 import Dashboard from '@/components/Dashboard.vue'
 import Settings from '@/components/Settings.vue'
-import Callback from '@/components/Callback.vue'
+
 
 Vue.use(Router)
 
@@ -38,8 +38,7 @@ function requireAuth (to, from, next) {
       { path: '', component: Login, beforeEnter: requireAuth  },
       { path: '/', component: Login, beforeEnter: requireAuth  },
       { path: '/dashboard', component: Dashboard, beforeEnter: requireAuth },
-      {path : '/settings', component: Settings, beforeEnter: requireAuth },
-      {path : '/callback', component: Callback},
+      {path : '/settings', component: Settings, beforeEnter: requireAuth },      
       { path: '/login', component: Login},
             
       { path: '/logout',
@@ -47,6 +46,7 @@ function requireAuth (to, from, next) {
           var id_token = JSON.parse(localStorage.getItem("token_id"));
           if (id_token == null){
             cognitoAuth.logout();         
+            AWS.config.credentials.clearCachedId();
           }
           next('/login')
           document.getElementsByName('token')['0'].content = '';

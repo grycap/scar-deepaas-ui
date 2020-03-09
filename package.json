@@ -1,5 +1,5 @@
 {
-  "name": "ui-deepaas-scar",
+  "name": "scar-deepaas-ui",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,10 +9,11 @@
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^3.2.4",
-    "aws-sdk": "^2.619.0",
+    "aws-sdk": "^2.632.0",
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "jwt-decode": "^2.2.0",
+    "moment": "^2.24.0",
     "vue": "^2.6.11",
     "vue-router": "^3.1.5",
     "vuetify": "^2.2.11"
