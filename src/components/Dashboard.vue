@@ -161,32 +161,35 @@
           wrap         
           align-center
         >
-          <v-flex xs12 sm4 class="my-4">
+          <!-- <v-flex xs12 sm4 class="my-4">
             <div class="text-center">
               <h2 class="headline">Please select the files from which you want to obtain the prediction.</h2>
             </div>
-          </v-flex>
-          <v-flex xs12>
-              <v-layout row wrap justify-center >
-                  <v-btn   
-                    class="ma-6"                 
+          </v-flex> -->
+          <v-flex xs12 justify-center>
+              <!-- <v-layout row wrap justify-center > -->
+                <v-card flat>
+                  <v-card-title>Please select the files from which you want to obtain the prediction.</v-card-title>
+                </v-card>
+                <v-card-actions class="justify-center">                  
+              
+              <vue-dropzone type="file" id="dropzone" ref="dropzonefiles" :options="dropzoneOptions" multiple @vdropzone-files-added="handleFilesUpload" @vdropzone-removed-file="removeFile"></vue-dropzone>
+                                    
+                </v-card-actions>
+                <v-card-actions class="justify-center">
+                  <v-btn                                       
                     color="primary"
-                    dark                  
+                    dark 
+                    small                 
                     depressed                                       
-                    @click.native="selectimage()"
+                    @click.native="removeAllFiles()"
                   >
-                    <v-icon left>note_add</v-icon>
-                    SELECT FILES
-                  </v-btn>    
-                  <v-btn                                        
-                    color="teal"
-                    class="ma-6 white--text"
-                    @click.native="clearall()"
-                  >
-                    Clear All
-                    <v-icon right dark>clear</v-icon>
-                  </v-btn>   
-              </v-layout>
+                    <v-icon left>delete_sweep</v-icon>
+                    Remove All Files
+                  </v-btn> 
+
+                </v-card-actions>
+              <!-- </v-layout>         -->
           </v-flex>          
         </v-layout>          
       </section>
@@ -198,7 +201,7 @@
             </div>
           </v-flex>
         
-        <v-flex xs12 sm6 offset-sm3 v-show="showSelectedFiles"  id="selectedList" class="text-xs-center">
+        <!-- <v-flex xs12 sm6 offset-sm3 v-show="showSelectedFiles"  id="selectedList" class="text-xs-center">
             <input type="file" id="files" ref="files" hidden=true multiple v-on:change="handleFilesUpload()"/>
             <v-list subheader dense >
                 <v-subheader inset>File</v-subheader>
@@ -224,7 +227,7 @@
                     </v-list-item-action>
                 </v-list-item>
             </v-list>                          
-        </v-flex>			        
+        </v-flex>			         -->
       </section>
          
       <section>
@@ -250,21 +253,24 @@
                 </v-btn>
 
                 <v-btn
-                    class="ma-6"
-                    :loading="showUploading"
-                    :disabled="showUploading"
+                    class="ma-6"                    
                     rounded
                     color="red lighten-2"
                     @click.native="listObjs()"
                 >
                     List Objects
-                    <v-icon right dark>view_list</v-icon>
-                    <template v-slot:loader>
-                    <span class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                    </span>
-                    </template>
+                    <v-icon right dark>view_list</v-icon>                    
                 </v-btn>  
+
+                 <v-btn   
+                    class="ma-6"                                          
+                    color="teal"                    
+                    rounded                    
+                    @click.native="clearall()"
+                  >
+                    Clear All
+                    <v-icon right dark>clear</v-icon>
+                  </v-btn> 
 
                 <!-- <v-btn
                     class="ma-6"
@@ -545,9 +551,13 @@
  import axios from 'axios'
  import jwtDecode from "jwt-decode" 
  import moment from 'moment'
+ import vue2Dropzone from 'vue2-dropzone'
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
  
   export default {
-    
+    components: {
+    vueDropzone: vue2Dropzone
+    },    
     data: () => ({
       albumName : '',
       albums: [],
@@ -602,7 +612,14 @@
       expand_list: false, 
       group_in : false,
       group_out : false,      
-      job_name : ''
+      job_name : '',
+      dropzoneOptions: {
+          url: 'https://httpbin.org/post',
+          thumbnailWidth: 150,
+          maxFilesize: 0.5,          
+          addRemoveLinks: true, 
+          destroyDropzone: false,
+      }
                        
     }),  
     created(){  
@@ -838,9 +855,12 @@
             this.$refs.files.click()            
         },
         handleFilesUpload () {
+          this.files = []
+          console.log("Estoy entrando")
             this.errorsfile = false            
             this.isSelecting = false
-            let uploadedFiles = this.$refs.files.files	
+            // let uploadedFiles = this.$refs.files.files	
+            let uploadedFiles = this.$refs.dropzonefiles.dropzone.files	
             
             /*
                 Adds the uploaded file to the files array
@@ -849,12 +869,19 @@
                 this.showUploading = false			
                 this.files.push(uploadedFiles[i])
             }		   
+            console.log(this.files)
         },
-        removeFile (key) {     
-            this.files.splice(key, 1)
-            this.$refs.files.value = null
+        removeFile (file, error, xhr) {     
+          console.log(this.files)
+            this.files.splice(file, 1)
+          console.log(this.files)
+            //this.$refs.files.value = null
         }, 
-        submitFiles(){          
+        removeAllFiles() {
+           this.$refs.dropzonefiles.removeAllFiles();
+        },
+        submitFiles(){  
+           if (this.check != ""){            
             this.errorsfile = false
             if (this.files.length != 0 && this.check != "") {
               var _this=this            
@@ -882,8 +909,9 @@
                           _this.loadingfiles = false  
                           _this.fileAlbumIN()    
                           _this.group_in = true
+                          _this.$refs.dropzonefiles.removeAllFiles();
                           _this.files = []     
-                          _this.$refs.files.value = null         
+                          // _this.$refs.files.value = null         
                         },
                         function(err) {
                         return alert("There was an error uploading your photo: ", err.message);
@@ -895,6 +923,9 @@
             else {
                 this.errorsfile = true
             }
+           }else{
+             this.show_check_error = true
+           }
         },
         getTime(){
           const today = new Date();
@@ -946,6 +977,7 @@
 
         },
         clearall(){          
+          console.log(this.$refs.dropzonefiles.dropzone.files.length)
             this.files = []          
             this.showObjectsBuckets = false
             this.show_check_error = false
@@ -967,6 +999,7 @@
     },    
     computed: {
       showSelectedFiles () {
+        // return this.files.length > 0
         return this.files.length > 0
         },      
     size () {
@@ -980,7 +1013,7 @@
 </script>
 
 <style>
-
+ 
 
 </style>
 
