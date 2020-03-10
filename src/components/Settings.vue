@@ -1,193 +1,87 @@
 <template>    
-  <v-content>    
-    <v-card flat tile>
-       <v-toolbar dense>
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>         
-        <v-toolbar-title class="hidden-sm-and-down">Make predictions through AWS with SCAR</v-toolbar-title>  
-        <v-spacer></v-spacer>
-        <v-toolbar-items >
-          <v-row xs4 justify="end">          
-            <v-btn-toggle            
-            dense
-            group
-            multiple 
-            class="align-center"           
-            >
+  <v-container 
+  class="fill-height"
+  fluid
+  > 
+      <v-row align="center" justify="center">
+        <v-col >          
+          <v-parallax src="@/assets/fondoazul.jpg" alt="">
+            <!-- <v-spacer></v-spacer> -->
+            <v-layout
+              column
+              align-center
+              justify-center
+              class="white--text"
+            >       
+              
+            <img src="@/assets/fondo1.png" height="100%">            
+            </v-layout>
+          </v-parallax>
+        </v-col>
+      </v-row>
 
-            <v-btn  @click.native="to_dashboard()">
-              <v-icon color="blue lighten-1">dashboard</v-icon>
-              Dashboard
-            </v-btn>              
-            <v-btn   @click.native="to_settings()">
-              <v-icon  color="blue lighten-1">settings</v-icon>
-              Settings
-            </v-btn>            
-             <v-menu offset-y>
-              <template v-slot:activator="{ on }">
-                <v-btn                                    
-                  v-on="on"
-                >
-                <v-icon color="red lighten-1">mdi-account-circle</v-icon>
-                  {{user}}
-                </v-btn>
-              </template>             
-              <v-btn  @click.native="logout()">
-              <v-icon color="blue lighten-1">logout</v-icon>
-              Log Out
-            </v-btn>      
-            </v-menu>
-            </v-btn-toggle>
-          </v-row>  
-        </v-toolbar-items>
-      </v-toolbar>
-    </v-card>
-      <section>
-        <v-parallax src="@/assets/fondoazul.jpg" height="500" alt="700">
-          <!-- <v-spacer></v-spacer> -->
-          <v-layout
-            column
-            align-center
-            justify-center
-            class="white--text"
-          >       
-            
-          <img src="@/assets/fondo1.png" height="100%">            
-          </v-layout>
-        </v-parallax>
-      </section>
-
-      <section>
-          <v-layout row wrap justify-center class="my-12">
-           <v-row justify="center">
-            <v-col cols="12" sm="10" md="8" lg="6">
-                <v-card ref="form">
-                <v-card-title primary-title class="layout justify-center">
-                    <div class="headline">Fields to configure the AWS-SDK</div>
-                </v-card-title>
-                <v-card-text>
-                    <v-text-field
-                        ref="region"
-                        v-model="region"
-                        :rules="[() => !!region || 'This field is required']"
-                        :error-messages="errorMessages"
-                        label="Region"                   
-                        required
-                    ></v-text-field>
-                    <v-text-field
-                        ref="clientid"
-                        v-model="clientid"
-                        :rules="[() => !!clientid || 'This field is required']"
-                        :error-messages="errorMessages"
-                        label="ClientId"                   
-                        required
-                    ></v-text-field>
-                    <v-text-field
-                        ref="userpoolid"
-                        v-model="userpoolid"
-                        :rules="[() => !!userpoolid || 'This field is required']"
-                        :error-messages="errorMessages"
-                        label="UserPoolId"                   
-                        required
-                    ></v-text-field>
-                    <v-text-field
-                        ref="bucket"
-                        v-model="bucket"
-                        :rules="[() => !!bucket || 'This field is required']"
-                        :error-messages="errorMessages"
-                        label="Bucket Name"                   
-                        required
-                    ></v-text-field>
-                    <v-text-field
-                        ref="identity"
-                        v-model="identity"
-                        :rules="[() => !!identity || 'This field is required']"
-                        :error-messages="errorMessages"
-                        label="IdentityPoolId"                   
-                        required
-                    ></v-text-field>
-                    
-                    
-                </v-card-text>
-                <v-divider class="mt-12"></v-divider>
-                <v-card-actions>
-                    <v-btn color="primary" text @click.native="submit()">Submit</v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn text @click.native="resetForm()">
-                        <v-icon>mdi-refresh</v-icon>
-                        Cancel</v-btn>                 
-                </v-card-actions>
-                </v-card>
-            </v-col>
-            </v-row>
-               
-          </v-layout>
-      </section>
-
-     
-      
-      <section>
-        <v-container grid-list-xl>
-          <v-layout row wrap justify-center class="my-12">
-            <v-flex xs12 sm4>
-              <v-card flat class="transparent">
-                <v-card-title primary-title class="layout justify-center">
-                  <div class="headline">Application info</div>
-                </v-card-title>
-                <v-card-text>
-                  This application allows you to load an image to obtain the prediction 
-                  of it through a machine learning model available from Amazon Web Services.
-                </v-card-text>
-              </v-card>
-            </v-flex>
-            <v-flex xs12 sm4 offset-sm1>
-              <v-card flat class="transparent">
-                <v-card-title primary-title class="layout justify-center">
-                  <div class="headline">Contact us</div>
-                </v-card-title>
-                <v-card-text>
-                  Grupo de Grid y Computación de Altas Prestaciones (GRyCAP)
-                </v-card-text>
-                <v-list class="transparent">
-                  <v-list-item>
-                    <v-list-item-action>
-                      <v-icon class="blue--text text--lighten-2">mdi-phone</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                      <v-list-item-title>(+34) 963877356</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-action>
-                      <v-icon class="blue--text text--lighten-2">mdi-map-marker</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                      <v-list-item-title>Valencia, Spain</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-action>
-                      <v-icon class="blue--text text--lighten-2">mdi-email</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                      <v-list-item-title>grycap@grycap.upv.es</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </v-flex>            
-          </v-layout>
-        </v-container>
-      </section>
-
-      <v-footer color="blue darken-2">
-        <v-layout row wrap align-center>
-          <v-flex xs12>
-            <div class="white--text ml-4">
-              <h5>© 2020, <a style="color:#ff9966;" href="https://www.grycap.upv.es">GRyCAP-I3M-UPV</a>, Universitat Politècnica de Valéncia, Spain.</h5>               </div>
-          </v-flex>
-        </v-layout>
-      </v-footer>
-    </v-content>
+      <v-row justify="center" align="center">
+        <v-col cols="12" sm="10" md="8" lg="6">
+            <v-card ref="form">
+            <v-card-title primary-title class="layout justify-center">
+                <div class="headline">Fields to configure the AWS-SDK</div>
+            </v-card-title>
+            <v-card-text>
+                <v-text-field
+                    ref="region"
+                    v-model="region"
+                    :rules="[() => !!region || 'This field is required']"
+                    :error-messages="errorMessages"
+                    label="Region"                   
+                    required
+                ></v-text-field>
+                <v-text-field
+                    ref="clientid"
+                    v-model="clientid"
+                    :rules="[() => !!clientid || 'This field is required']"
+                    :error-messages="errorMessages"
+                    label="ClientId"                   
+                    required
+                ></v-text-field>
+                <v-text-field
+                    ref="userpoolid"
+                    v-model="userpoolid"
+                    :rules="[() => !!userpoolid || 'This field is required']"
+                    :error-messages="errorMessages"
+                    label="UserPoolId"                   
+                    required
+                ></v-text-field>
+                <v-text-field
+                    ref="bucket"
+                    v-model="bucket"
+                    :rules="[() => !!bucket || 'This field is required']"
+                    :error-messages="errorMessages"
+                    label="Bucket Name"                   
+                    required
+                ></v-text-field>
+                <v-text-field
+                    ref="identity"
+                    v-model="identity"
+                    :rules="[() => !!identity || 'This field is required']"
+                    :error-messages="errorMessages"
+                    label="IdentityPoolId"                   
+                    required
+                ></v-text-field>
+                
+                
+            </v-card-text>
+            <v-divider class="mt-12"></v-divider>
+            <v-card-actions>
+                <v-btn color="primary" text @click.native="submit()">Submit</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn text @click.native="resetForm()">
+                    <v-icon>mdi-refresh</v-icon>
+                    Cancel</v-btn>                 
+            </v-card-actions>
+            </v-card>
+        </v-col>
+        </v-row>
+  </v-container>
 </template>
 
 <script> 

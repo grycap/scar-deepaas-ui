@@ -1,111 +1,62 @@
 <template>    
-  <v-content>    
-    <v-card flat tile>
-      <v-toolbar dense>
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>         
-        <v-toolbar-title class="hidden-sm-and-down">Make predictions through AWS with SCAR</v-toolbar-title>  
-        <v-spacer></v-spacer>
-        <v-toolbar-items >
-          <v-row xs4 justify="end">          
-            <v-btn-toggle            
-            dense
-            group
-            multiple 
-            class="align-center"           
-            >
-
-            <v-btn  @click.native="to_dashboard()">
-              <v-icon color="blue lighten-1">dashboard</v-icon>
-              Dashboard
-            </v-btn>              
-            <v-btn   @click.native="to_settings()">
-              <v-icon  color="blue lighten-1">settings</v-icon>
-              Settings
-            </v-btn>            
-             <v-menu offset-y>
-              <template v-slot:activator="{ on }">
-                <v-btn                                    
-                  v-on="on"
-                >
-                <v-icon color="red lighten-1">mdi-account-circle</v-icon>
-                  {{user}}
-                </v-btn>
-              </template>             
-              <v-btn  @click.native="logout()">
-              <v-icon color="blue lighten-1">logout</v-icon>
-              Log Out
-            </v-btn>      
-            </v-menu>
-            </v-btn-toggle>
-          </v-row>  
-        </v-toolbar-items>
-      </v-toolbar>
-    </v-card>
-      <section>
-        <v-parallax src="@/assets/fondoazul.jpg" height="500" alt="">
-          <!-- <v-spacer></v-spacer> -->
-          <v-layout
-            column
-            align-center
-            justify-center
-            class="white--text"
-          >       
-            
-          <img src="@/assets/fondo1.png" height="100%">            
-          </v-layout>
-        </v-parallax>
-      </section>
-
+  <v-container 
+  class="fill-height"
+  fluid
+  >   
+     
+        <v-row align="center" justify="center">
+          <v-col >          
+            <v-parallax src="@/assets/fondoazul.jpg" alt="">
+              <!-- <v-spacer></v-spacer> -->
+              <v-layout
+                column
+                align-center
+                justify-center
+                class="white--text"
+              >       
+                
+              <img src="@/assets/fondo1.png" height="100%">            
+              </v-layout>
+            </v-parallax>
+          </v-col>
+        </v-row>
       
-       <section>
-        <v-layout
-          column
-          wrap          
-          align-center
-        >
-          <v-flex xs12 sm4 justify-center >
-            <div class="text-center">
-              <h3 class="headline font-weight-black">Interacting with AWS Services</h3>
-              <v-divider inset></v-divider>
-              <p></p>
-              <img src="@/assets/lambda.png"  height= "100" alt="">
-              <img src="@/assets/bucket.png"  height= "100" alt="">
-              <img src="@/assets/batch.png"  height= "100" alt="">
-              <!-- <v-divider inset></v-divider> -->
-              <p></p>
-              <span class="subheading" style="color:#ff3333; font-size: 15pt">
-                Bucket name: {{env.BucketName}}
-              </span>            
-            </div>
-          </v-flex>
-          </v-layout>
-        </section> 
 
-        <section>
-          <v-layout
-            column
-            wrap
-            class="my-12"
-            align-center 
-                       
-          >
-            <v-card style="border-radius:70px;">
-              <v-card-text>
-                <v-container >
-                  <div class="text-center">
-                  <span class="subheading" style="color:#cc7a00; font-size: 15pt; text-decoration: underline">
-                    SELECT A MODEL
-                  </span>
-                  </div>
+     
+        <v-row
+          align="center"
+          justify="center" >
+          <v-col>
+              <div class="text-center">
+                <h3 class="headline font-weight-black">Interacting with AWS Services</h3>
+                <p></p>
+                <img src="@/assets/lambda.png"  height= "100" alt="">
+                <img src="@/assets/bucket.png"  height= "100" alt="">
+                <img src="@/assets/batch.png"  height= "100" alt="">
+                <p></p>
+                <span class="subheading" style="color:#ff3333; font-size: 15pt">
+                  Bucket name: {{env.BucketName}}
+                </span>            
+              </div>
+          </v-col>
+        </v-row>
 
-                  <v-row>
-                    <v-col cols="12" >
-                      <v-row
-                      align="center"
-                      justify="center"
-                      >
+        <v-container fluid>
+        <v-row dense>
+          <v-col cols="12" md="6" >
+            <v-card flat>
+              <v-card-title  class="justify-center">                 
+                    Select a Model
+              </v-card-title>
+
+              <v-container fluid>
+                  <v-row  
+                  align="center"
+                  justify="center" >
+                    <v-col cols="12" sm="4" md="4">                      
+                      
                        <v-checkbox
-                        class="ma-3 pa-6"
+                        id="checkbox"
                         v-model="check"
                         label="Audio Classifier"
                         color="red"
@@ -113,15 +64,17 @@
                         hide-details
                       ></v-checkbox> 
                        <v-checkbox
-                        class="ma-3 pa-6"
+                        id="checkbox"
                         v-model="check"
                         label="Body pose detection"
                         color="indigo"
                         value="posenet"
                         hide-details
                       ></v-checkbox> 
+                    </v-col>
+                    <v-col cols="12" sm="4" md="4">
                       <v-checkbox
-                        class="ma-3 pa-6"
+                        id="checkbox"
                         v-model="check"
                         label="Plants species classifier"
                         color="orange"
@@ -129,14 +82,18 @@
                         hide-details
                       ></v-checkbox> 
                       <v-checkbox
-                        class="ma-3 pa-6"
+                        id="checkbox"
                         v-model="check"
                         label="Darknet"
                         color="green"
                         value="darknet"
                         hide-details
                       ></v-checkbox> 
-                    </v-row>  
+                  
+                    </v-col>           
+                  </v-row>
+                </v-container>
+
                     <v-row v-show="showexample" align="center" justify="center">                  
                       <a style="color:#ff9966;" :href="link" target="_blank">Input example for models</a> 
                     </v-row> 
@@ -144,33 +101,11 @@
                     <v-row v-show="showexample" align="center" justify="center">  
                       <a style="color:#ff9966;" :href="link_model" target="_blank">Link to the Model in the Catalog</a>                      
                     </v-row>
-                  </v-col>           
-                  </v-row>
-                </v-container>
-              </v-card-text>
-            </v-card>
-                  
-
-          </v-layout>
-        </section>
-
-
-        <section>
-        <v-layout
-          column
-          wrap         
-          align-center
-        >
-          <!-- <v-flex xs12 sm4 class="my-4">
-            <div class="text-center">
-              <h2 class="headline">Please select the files from which you want to obtain the prediction.</h2>
-            </div>
-          </v-flex> -->
-          <v-flex xs12 justify-center>
-              <!-- <v-layout row wrap justify-center > -->
-                <v-card flat>
-                  <v-card-title>Please select the files from which you want to obtain the prediction.</v-card-title>
-                </v-card>
+            </v-card>            
+          </v-col>
+          <v-col cols="12" md="6">
+               <v-card flat >
+                  <v-card-title class="justify-center">Upload Files</v-card-title>
                 <v-card-actions class="justify-center">                  
               
               <vue-dropzone type="file" id="dropzone" ref="dropzonefiles" :options="dropzoneOptions" multiple @vdropzone-files-added="handleFilesUpload" @vdropzone-removed-file="removeFile"></vue-dropzone>
@@ -187,61 +122,11 @@
                     <v-icon left>delete_sweep</v-icon>
                     Remove All Files
                   </v-btn> 
-
                 </v-card-actions>
-              <!-- </v-layout>         -->
-          </v-flex>          
-        </v-layout>          
-      </section>
-
-      <section>
-        <v-flex xs12>
-            <div class="text-center">
-              <span v-show="errorsfile" style="color: #cc3300; font-size: 12px;"><b>Please, select a file to upload.</b></span>              
-            </div>
-          </v-flex>
-        
-        <!-- <v-flex xs12 sm6 offset-sm3 v-show="showSelectedFiles"  id="selectedList" class="text-xs-center">
-            <input type="file" id="files" ref="files" hidden=true multiple v-on:change="handleFilesUpload()"/>
-            <v-list subheader dense >
-                <v-subheader inset>File</v-subheader>
-                <v-list-item
-                    v-for="(file, key) in files"
-                    :key="key"
-                    @click.stop=""
-                >                                    
-                    <v-progress-circular
-                        indeterminate
-                        color="teal"
-                        v-show="showUploading"
-                    >
-                    </v-progress-circular>
-
-                    <v-list-item-content>
-                        <v-list-item-title>{{file.name}}</v-list-item-title>														
-                    </v-list-item-content>
-                    <v-list-item-action>
-                        <v-btn icon ripple @click="removeFile(key)">
-                            <v-icon color="red lighten-1">remove_circle_outline</v-icon>
-                        </v-btn>
-                    </v-list-item-action>
-                </v-list-item>
-            </v-list>                          
-        </v-flex>			         -->
-      </section>
-         
-      <section>
-        <v-layout
-         column
-          wrap          
-          align-center>
-            
-          <v-flex xs12>
-            <v-container grid-list-xl>
-              <v-layout row wrap justify-center class="my-12">
-                <v-btn
-                    class="ma-6"                    
-                    rounded
+                <v-card-actions class="justify-center">
+                   <v-btn                                   
+                    small
+                    dark
                     color="red lighten-2"
                     :loading="loadingfiles"
                     :disabled="loadingfiles"
@@ -251,6 +136,16 @@
                     <v-icon right dark>cloud_upload</v-icon>
                     
                 </v-btn>
+                </v-card-actions>
+                <div class="text-center">
+                  <span v-show="errorsfile" style="color: #cc3300; font-size: 12px;"><b>Please, select a file to upload.</b></span>              
+                </div>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+
+          <!-- <v-col cols=12>          
 
                 <v-btn
                     class="ma-6"                    
@@ -272,277 +167,161 @@
                     <v-icon right dark>clear</v-icon>
                   </v-btn> 
 
-                <!-- <v-btn
-                    class="ma-6"
-                    :loading="showUploading"
-                    :disabled="showUploading"
-                    rounded
-                    color="red lighten-2"
-                    @click.native="check_state()"
-                >
-                    Check state
-                    <v-icon right dark>view_list</v-icon>
-                    <template v-slot:loader>
-                    <span class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                    </span>
-                    </template>
-                </v-btn>                    -->
-              </v-layout>
-            </v-container>
-          </v-flex>          
-        </v-layout>          
-      </section>
+          </v-col> -->
 
-      <section>
-        <v-layout
-         column
-          wrap          
-          align-center>
-        <v-flex xs12>
-        <v-card v-show="show_table">
-          <v-card-title>
-            <span>Jobs States</span>   
-            <v-spacer></v-spacer>
-            <a style="color:#ff9966;font-size: 10pt" href="https://docs.aws.amazon.com/batch/latest/userguide/job_states.html" target="_blank"> For more information about jobs states</a>
-          </v-card-title>
-          <v-card-actions>
-            <!-- <v-text-field
-              v-model="search"
-              append-icon="search"
-              label="Search"
-              single-line
-              hide-details
-            ></v-text-field> -->
-            <v-spacer></v-spacer>             
-            <span style="font-size: 10pt">Last update: {{lastupdate}}</span>         
-           <v-btn icon ripple @click="check_state()">
-              <v-icon>refresh</v-icon>
-            </v-btn>                
+          <v-row
+          align="center"
+          justify="center"
+          >
+            <v-col cols=12>
+              <v-card v-show="show_table">
+                <v-card-title>
+                  <span>Jobs States</span>   
+                  <v-spacer></v-spacer>
+                  <a style="color:#ff9966;font-size: 10pt" href="https://docs.aws.amazon.com/batch/latest/userguide/job_states.html" target="_blank"> For more information about jobs states</a>
+                </v-card-title>
+                <v-card-actions>
+                  <!-- <v-text-field
+                    v-model="search"
+                    append-icon="search"
+                    label="Search"
+                    single-line
+                    hide-details
+                  ></v-text-field> -->
+                  <v-spacer></v-spacer>             
+                  <span style="font-size: 10pt">Last update: {{lastupdate}}</span>         
+                  <v-btn icon ripple @click="check_state()">
+                    <v-icon>refresh</v-icon>
+                  </v-btn>                
+                </v-card-actions>     
+
+                <v-data-table 
+                  :headers="headers"
+                  :items="items"
+                  :loading="loading"
+                  class="elevation-1"
+                  item-key="name"
+                  :search="search"
+                  :items-per-page="1"
+                  hide-default-footer
+                  disable-sort
+                  v-show="!show_spinner"
+                >          
+                </v-data-table> 
+                <v-row v-show="!show_spinner" justify="center">	
+                    <span style="font-size: 15px">Provisioned virtual machines: {{maxvCPUS}}</span>
+                </v-row> 
+                <v-row v-show="show_spinner" justify="center">	
+                    <v-progress-circular
+                      :size="50"
+                      color="primary"
+                      indeterminate
+                    ></v-progress-circular>
+                </v-row>  
+            </v-card>
+          </v-col>
+        </v-row>
+
+
+      <v-row
+          align="center"
+          justify="center"
+          >
+
+        <v-col cols="12">
+            <div class="text-center">
+              <span v-show="show_check_error" style="color: #cc3300; font-size: 12px;"><b>Please, select a model.</b></span>              
+            </div>      
+          <v-flex xs12 sm6 offset-sm3 v-show="showObjectsBuckets"  id="selectedBuckets" class="text-xs-center"> 
+              <v-list subheader dense>
+                  <v-subheader inset>Folders in S3 bucket</v-subheader>                                
+                  <v-list-item-title> 
+                    <v-icon color="orange lighten-1 ">folder</v-icon>
+                    {{albums}}
+                  </v-list-item-title>
+
+                    <v-list-group                   
+                      sub-group
+                      v-model="group_in"
+                      @click.native="fileAlbumIN()"
+                    >
+                      
+                      <v-list-item-content slot="activator">
+                        <v-list-item-title>
+                          <v-icon color="orange lighten-1 ">folder</v-icon>
+                          Input
+                          </v-list-item-title>
+                      </v-list-item-content>
+                      
             
-          </v-card-actions>         
-          
-          <v-data-table 
-            :headers="headers"
-            :items="items"
-            :loading="loading"
-            class="elevation-1"
-            item-key="name"
-            :search="search"
-            :items-per-page="1"
-            hide-default-footer
-            disable-sort
-			      v-show="!show_spinner"
+                      <v-list-item
+                        v-for="(albumfile,key2) in albumsFilesIN"
+                        :key="key2"                             
+                        no-action                   
+                      > 
+                        <v-list-item-avatar>
+                            <v-icon color="blue lighten-1 ">insert_drive_file</v-icon>
+                        </v-list-item-avatar>                                          
+
+                        <v-list-item-content activator>
+                            <v-list-item-title>{{albumfile[0]}}</v-list-item-title>                       											
+                        </v-list-item-content>
+                        <v-list-item-action>                       
+                              <v-btn-toggle multiple>
+                                <v-btn icon ripple @click="downloadFile(albumfile[0])">
+                                    <v-icon color="green lighten-1">cloud_download</v-icon>
+                                </v-btn>    
+                                <v-btn icon ripple @click="deleteFile(albumfile[0])">
+                                    <v-icon color="red lighten-1">delete_forever</v-icon>
+                                </v-btn>
+                            </v-btn-toggle>                         
+                        </v-list-item-action>
+                      </v-list-item>
+                    </v-list-group>   
+
+
+                    <v-list-group                   
+                      sub-group
+                    v-model="group_out"
+                      @click.native="fileAlbumOUT"                   
+                    >
+                      <v-list-item-content slot="activator">
+                      <v-list-item-title>
+                        <v-icon color="orange lighten-1 ">folder</v-icon>
+                        Output
+                        </v-list-item-title>
+                      </v-list-item-content>
             
-          >          
-          </v-data-table> 
+                      <v-list-item
+                        v-for="(albumfile,key2) in albumsFilesOUT"
+                        :key="key2"                             
+                        no-action                   
+                      > 
+                      <v-list-item-avatar>
+                          <v-icon color="blue lighten-1 ">insert_drive_file</v-icon>
+                      </v-list-item-avatar>                                          
 
-          <v-row v-show="!show_spinner" justify="center">	
-              <span style="font-size: 15px">Provisioned virtual machines: {{maxvCPUS}}</span>
-          </v-row> 
-
-          <v-row v-show="show_spinner" justify="center">	
-              <v-progress-circular
-                :size="50"
-                color="primary"
-                indeterminate
-              ></v-progress-circular>
-          </v-row>  
-			  
-        </v-card>
-      </v-flex>
-      </v-layout>
-    </section>
-
-    <p></p>
-    <section>
-      <v-flex xs12>
-        <div class="text-center">
-            <span v-show="show_check_error" style="color: #cc3300; font-size: 12px;"><b>Please, select a model.</b></span>              
-        </div>
-      </v-flex>
-        <v-flex xs12 sm6 offset-sm3 v-show="showObjectsBuckets"  id="selectedBuckets" class="text-xs-center">     
-
-             <v-list subheader dense>
-                <v-subheader inset>Folders</v-subheader>                                
-                    <v-list-item-title> 
-                      <v-icon color="orange lighten-1 ">folder</v-icon>
-                      {{albums}}
-                    </v-list-item-title>
-
-                  <v-list-group                   
-                    sub-group
-                    v-model="group_in"
-                    @click.native="fileAlbumIN()"
-                  >
-                    
-                  <v-list-item-content slot="activator">
-                    <v-list-item-title>
-                      <v-icon color="orange lighten-1 ">folder</v-icon>
-                      Input
-                      </v-list-item-title>
-                  </v-list-item-content>
-                     
-          
-                    <v-list-item
-                      v-for="(albumfile,key2) in albumsFilesIN"
-                      :key="key2"                             
-                      no-action                   
-                    > 
-                     <v-list-item-avatar>
-                        <v-icon color="blue lighten-1 ">insert_drive_file</v-icon>
-                    </v-list-item-avatar>                                          
-
-                    <v-list-item-content activator>
-                         <v-list-item-title>{{albumfile[0]}}</v-list-item-title>                       											
-                    </v-list-item-content>
-                    <v-list-item-action>                       
-                           <v-btn-toggle multiple>
-                            <v-btn icon ripple @click="downloadFile(albumfile[0])">
-                                <v-icon color="green lighten-1">cloud_download</v-icon>
-                            </v-btn>    
-                            <v-btn icon ripple @click="deleteFile(albumfile[0])">
-                                <v-icon color="red lighten-1">delete_forever</v-icon>
-                            </v-btn>
-                        </v-btn-toggle>                         
-                        
-                    </v-list-item-action>
-                </v-list-item>
-                  </v-list-group>   
-
-
-                  <v-list-group                   
-                    sub-group
-                   v-model="group_out"
-                    @click.native="fileAlbumOUT"                   
-                  >
-                    <v-list-item-content slot="activator">
-                    <v-list-item-title>
-                      <v-icon color="orange lighten-1 ">folder</v-icon>
-                      Output
-                      </v-list-item-title>
-                    </v-list-item-content>
-          
-                    <v-list-item
-                      v-for="(albumfile,key2) in albumsFilesOUT"
-                      :key="key2"                             
-                      no-action                   
-                    > 
-                     <v-list-item-avatar>
-                        <v-icon color="blue lighten-1 ">insert_drive_file</v-icon>
-                    </v-list-item-avatar>                                          
-
-                    <v-list-item-content activator>
-                         <v-list-item-title>{{albumfile[0]}}</v-list-item-title>                       											
-                    </v-list-item-content>
-                    <v-list-item-action>                       
-                           <v-btn-toggle multiple>
-                            <v-btn icon ripple @click="downloadFile(albumfile[0])">
-                                <v-icon color="green lighten-1">cloud_download</v-icon>
-                            </v-btn>    
-                            <v-btn icon ripple @click="deleteFile(albumfile[0])">
-                                <v-icon color="red lighten-1">delete_forever</v-icon>
-                            </v-btn>
-                        </v-btn-toggle>                         
-                        
-                    </v-list-item-action>
-                </v-list-item>
-                  </v-list-group>   
-
+                      <v-list-item-content activator>
+                          <v-list-item-title>{{albumfile[0]}}</v-list-item-title>                       											
+                      </v-list-item-content>
+                      <v-list-item-action>                       
+                            <v-btn-toggle multiple>
+                              <v-btn icon ripple @click="downloadFile(albumfile[0])">
+                                  <v-icon color="green lighten-1">cloud_download</v-icon>
+                              </v-btn>    
+                              <v-btn icon ripple @click="deleteFile(albumfile[0])">
+                                  <v-icon color="red lighten-1">delete_forever</v-icon>
+                              </v-btn>
+                          </v-btn-toggle>                         
                           
-                
-                 <!-- <v-list-item
-                    v-for="(albumfile,key2) in albumsFiles"
-                    :key="key2"                             
-                    no-action                   
-                > 
-                     <v-list-item-avatar>
-                        <v-icon color="blue lighten-1 ">insert_drive_file</v-icon>
-                    </v-list-item-avatar>                                          
-
-                    <v-list-item-content activator>
-                         <v-list-item-title>{{albumfile[0]}}</v-list-item-title>                       											
-                    </v-list-item-content>
-                    <v-list-item-action>                       
-                           <v-btn-toggle multiple>
-                            <v-btn icon ripple @click="downloadFile(albumfile[0])">
-                                <v-icon color="green lighten-1">cloud_download</v-icon>
-                            </v-btn>    
-                            <v-btn icon ripple @click="deleteFile(albumfile[0],album)">
-                                <v-icon color="red lighten-1">delete_forever</v-icon>
-                            </v-btn>
-                        </v-btn-toggle>                         
-                        
-                    </v-list-item-action>
-                </v-list-item>                  -->
-             </v-list>                
-        </v-flex>	
-      </section>	      
-
-      
-      <section>
-        <v-container grid-list-xl>
-          <v-layout row wrap justify-center class="my-12">
-            <v-flex xs12 sm4>
-              <v-card flat class="transparent">
-                <v-card-title primary-title class="layout justify-center">
-                  <div class="headline">Application info</div>
-                </v-card-title>
-                <v-card-text>
-                  This application allows you to load an image to obtain the prediction 
-                  of it through a machine learning model available from Amazon Web Services.
-                </v-card-text>
-              </v-card>
-            </v-flex>
-            <v-flex xs12 sm4 offset-sm1>
-              <v-card flat class="transparent">
-                <v-card-title primary-title class="layout justify-center">
-                  <div class="headline">Contact us</div>
-                </v-card-title>
-                <v-card-text>
-                  Grupo de Grid y Computación de Altas Prestaciones (GRyCAP)
-                </v-card-text>
-                <v-list class="transparent">
-                  <v-list-item>
-                    <v-list-item-action>
-                      <v-icon class="blue--text text--lighten-2">mdi-phone</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                      <v-list-item-title>(+34) 963877356</v-list-item-title>
-                    </v-list-item-content>
+                      </v-list-item-action>
                   </v-list-item>
-                  <v-list-item>
-                    <v-list-item-action>
-                      <v-icon class="blue--text text--lighten-2">mdi-map-marker</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                      <v-list-item-title>Valencia, Spain</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item>
-                    <v-list-item-action>
-                      <v-icon class="blue--text text--lighten-2">mdi-email</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                      <v-list-item-title>grycap@grycap.upv.es</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </v-flex>            
-          </v-layout>
-        </v-container>
-      </section>
-
-      <v-footer color="blue darken-2">
-        <v-layout row wrap align-center>
-          <v-flex xs12>
-            <div class="white--text ml-4">
-              <h5>© 2020, <a style="color:#ff9966;" href="https://www.grycap.upv.es">GRyCAP-I3M-UPV</a>, Universitat Politècnica de Valéncia, Spain.</h5>               </div>
-          </v-flex>
-        </v-layout>
-      </v-footer>
-    </v-content>
+                    </v-list-group>               
+              </v-list>
+            </v-flex>       
+        </v-col>
+      </v-row>
+    </v-container>
 </template>
 
 <script>
@@ -558,7 +337,9 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
     components: {
     vueDropzone: vue2Dropzone
     },    
+    
     data: () => ({
+      drawer: null,
       albumName : '',
       albums: [],
       albumsFilesIN: [],     
@@ -622,7 +403,8 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
       }
                        
     }),  
-    created(){  
+    created(){      
+       this.$vuetify.theme.light = true 
       var current= new Date(document.lastModified);          
       this.lastupdate = moment(current).format("MMMM Do YYYY, h:mm:ss a")
 
@@ -682,14 +464,14 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
               this.model_folder = "posenet"
               this.albums="posenet"
               this.job_name = "scar-deepaas-posenet"
-              // this.check_state()
+              this.check_state()
           }else if (val == "plants"){
               this.link = "https://raw.githubusercontent.com/deephdc/plant-classification-theano/master/data/demo-images/image1.jpg"
               this.link_model = "https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-plants-classification-tf.html"
               this.model_folder = "plants"
               this.albums="plants"
               this.job_name = "scar-deepaas-plants"
-              // this.check_state()
+              this.check_state()
           }else if (val == "darknet"){
               this.link = "https://raw.githubusercontent.com/grycap/scar/master/examples/darknet/dog.jpg"
               this.link_model = "https://github.com/grycap/scar/tree/master/examples/darknet"
@@ -705,51 +487,19 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 
         }
         if(val == null) {
-          this.clearall()          
+            this.files = []          
+            this.showObjectsBuckets = false
+            this.show_check_error = false
+            this.errorsfile = false
+            this.show_table = false
+            this.group_in = false
+            this.showexample = false
+            this.group_out = false              
         }
       }
 
     },
     methods: {         
-      listObjs() {  
-        
-        if (this.check != ""){           
-            this.showObjectsBuckets = true 
-            this.fileAlbumIN()
-            this.group_in = true           
-            this.fileAlbumOUT()
-            this.group_out = true            
-          //   // AWS.config.credentials = new AWS.Credentials(_this.accessKeyId, _this.secretAccessKey, _this.sessionToken); // Keys returned from STS
-          //  this.s3.config.update({credentials: AWS.config.credentials})            
-          //   this.albums = []
-          //   this.albumsFiles = []
-          //   var params_alb = {
-          //       Bucket: this.env.BucketName,
-          //       Delimiter: this.check                 
-          //   };   
-          //   //List name of the album inside the bucket
-          //   this.s3.listObjects(params_alb, function(err, data) {
-          //       if (err) {
-          //           console.log("There was an error listing your albums: " + err.message);
-          //           _this.logout()  //go to logout when error because that is the expire credentials
-          //       } else {
-          //           _this.data_album(data)                 
-          //       }
-          //   });
-           	
-            }else{
-              this.show_check_error = true
-              this.showObjectsBuckets = false
-            }      
-        }, 
-        // data_album(data) {         
-            
-        //     for (let i = 0; i < data.CommonPrefixes.length; i++) {       			
-        //         this.albums.push(data.CommonPrefixes[i].Prefix)            
-        //     }      
-        //     console.log(this.albums)  
-                        
-        // },   
         fileAlbumIN(){         
               
             //List input files                
@@ -815,7 +565,11 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
                     _this.logout() //expire credentials
                 } 
                     console.log("Successfully deleted photo.");
-                    _this.listObjs();                     
+                    _this.showObjectsBuckets = true 
+                    _this.fileAlbumIN()
+                    _this.group_in = true           
+                    _this.fileAlbumOUT()
+                    _this.group_out = true                
             });
 
         }, 
@@ -881,7 +635,8 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
            this.$refs.dropzonefiles.removeAllFiles();
         },
         submitFiles(){  
-           if (this.check != ""){            
+          console.log(this.check)
+           if (this.check != "" || this.check != null){            
             this.errorsfile = false
             if (this.files.length != 0 && this.check != "") {
               var _this=this            
@@ -975,27 +730,11 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
           this.items.push(this.jobs)
           this.maxvCPUS = json_jobs.computeEnv
 
-        },
-        clearall(){          
-          console.log(this.$refs.dropzonefiles.dropzone.files.length)
-            this.files = []          
-            this.showObjectsBuckets = false
-            this.show_check_error = false
-            this.errorsfile = false
-            this.show_table = false
-            this.group_in = false
-            this.group_out = false
-
-        },
-        logout(){        
+        },       
+         logout(){        
             this.$router.replace(this.$route.query.redirect || "/logout");        
         },
-        to_dashboard(){
-          this.$router.replace(this.$route.query.redirect || "/dashboard"); 
-        },
-        to_settings(){
-          this.$router.replace(this.$route.query.redirect || "/settings"); 
-        }
+       
     },    
     computed: {
       showSelectedFiles () {

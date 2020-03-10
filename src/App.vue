@@ -1,24 +1,21 @@
 <template>
   <v-app>
-   <v-content>
-      <!-- <dashboard v-if="loggedIn"></dashboard>
-      <login v-else></login> -->
-      <router-view></router-view>
-    </v-content>
+    <layout v-if="loggedIn"></layout>
+      <login v-else></login>
   </v-app>
 </template>
 
 <script>
-// import Dashboard from './components/Dashboard';
-// import Login from './components/auth/login/Login';
+import Layout from './components/Layout';
+import Login from './components/auth/login/Login';
 import jwtDecode from "jwt-decode";
 export default {
   name: 'App',
 
-  // components: {
-  //   Dashboard,
-  //   Login
-  // },
+  components: {
+    Layout,
+    Login
+  },
   computed: {
       isAuth () {
         return this.loggedIn
@@ -41,19 +38,19 @@ export default {
 		// //console.log(jwtToken)
 		// });
 
-    // this.$cognitoAuth.isAuthenticated((err, loggedIn) => { 
-    //   if (err) {
-    //     console.log("App: Couldn't get the session:", err, err.stack);
-		// 		return;
-		// 	} 
-    //   this.loggedIn = loggedIn;   
-    //   console.log(loggedIn) 
-		// 	// this.$eventHub.$emit('check-login',this.loggedIn);
-		// });
-		// this.$cognitoAuth.onChange = loggedIn => {
-    //     this.loggedIn = loggedIn;        
-		// // this.$eventHub.$emit('check-login',this.loggedIn);	
-		// };			
+    this.$cognitoAuth.isAuthenticated((err, loggedIn) => { 
+      if (err) {
+        console.log("App: Couldn't get the session:", err, err.stack);
+				return;
+			} 
+      this.loggedIn = loggedIn;   
+      console.log(loggedIn) 
+			// this.$eventHub.$emit('check-login',this.loggedIn);
+		});
+		this.$cognitoAuth.onChange = loggedIn => {
+        this.loggedIn = loggedIn;        
+		// this.$eventHub.$emit('check-login',this.loggedIn);	
+		};			
   },
   mounted() {
 		if (typeof localStorage.getItem("session") != "undefined") {
@@ -66,6 +63,7 @@ export default {
 			}        
     }
     console.log(this.loggedIn)
-	}
+  }, 
+  
 };
 </script>
