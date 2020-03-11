@@ -10,6 +10,12 @@ The application has authentication enabled through a Cognito user group or throu
 
 * An [Identity Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/identity-pools.html) to have access to AWS Services, such as AWS S3 or AWS Lambda. This Identity Pool needs as an [OpenID Connect authentication provider](https://docs.aws.amazon.com/cognito/latest/developerguide/open-id.html)
 
+* A function created with [SCAR](https://scar.readthedocs.io/en/latest/) where the model in installed.
+
+* In the S3 bucket where the files that trigger the SCAR function will be uploaded, it is necessary to have the following configuration:
+                "BUCKET/FOLDER_MODEL_NAME/INPUT"
+                "BUCKET/FOLDER_MODEL_NAME/OUTPUT"
+
 * [npm](https://www.npmjs.com/) installed.
 
 ## Deployment
