@@ -44,7 +44,11 @@
         <v-container fluid>
         <v-row dense>
           <v-col cols="12" md="6" >
-            <v-card flat>
+            <v-card 
+            flat 
+            class="mx-auto"
+            max-width="500"
+            >
               <v-card-title  class="justify-center">                 
                     Select a Model
               </v-card-title>
@@ -53,7 +57,7 @@
                   <v-row  
                   align="center"
                   justify="center" >
-                    <v-col cols="12" sm="4" md="4">                      
+                    <v-col cols="12" sm="6">                      
                       
                        <v-checkbox
                         id="checkbox"
@@ -72,7 +76,7 @@
                         hide-details
                       ></v-checkbox> 
                     </v-col>
-                    <v-col cols="12" sm="4" md="4">
+                    <v-col cols="12" sm="6">
                       <v-checkbox
                         id="checkbox"
                         v-model="check"
@@ -89,7 +93,6 @@
                         value="darknet"
                         hide-details
                       ></v-checkbox> 
-                  
                     </v-col>           
                   </v-row>
                 </v-container>
@@ -104,7 +107,10 @@
             </v-card>            
           </v-col>
           <v-col cols="12" md="6">
-               <v-card flat >
+               <v-card
+                flat 
+                class="mx-auto"
+                max-width="500" >
                   <v-card-title class="justify-center">Upload Files</v-card-title>
                 <v-card-actions class="justify-center">                  
               
@@ -126,14 +132,14 @@
                 <v-card-actions class="justify-center">
                    <v-btn                                   
                     small
-                    dark
+                    class="white--text"
                     color="red lighten-2"
                     :loading="loadingfiles"
                     :disabled="loadingfiles"
                     @click.native="submitFiles()"
                 >
+                    <v-icon left >cloud_upload</v-icon>
                     Upload Files
-                    <v-icon right dark>cloud_upload</v-icon>
                     
                 </v-btn>
                 </v-card-actions>
@@ -397,7 +403,7 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
       dropzoneOptions: {
           url: 'https://httpbin.org/post',
           thumbnailWidth: 150,
-          maxFilesize: 0.5,          
+          // maxFilesize: 0.5,          
           addRemoveLinks: true, 
           destroyDropzone: false,
       }
@@ -438,7 +444,7 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
         // Credentials will be available when this function is called.
             if (err) {
               console.log("Error: " + err)
-              // _this.logout()
+              _this.logout()
               } 
             else {              
             _this.accessKeyId = AWS.config.credentials.accessKeyId
@@ -504,19 +510,20 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
               
             //List input files                
             this.s3.config.update({credentials: AWS.config.credentials})
-            this.albumsFilesIN = []
+            this.albumsFilesIN = []				  
             var params_in = {
-                Bucket: this.env.BucketName, /* required */
+              Bucket: this.env.BucketName, /* required */
                 Prefix: this.model_folder + "/input/" + this.user + "/"  // Can be your folder name
             };
             var _this = this               
             this.s3.config.update({credentials: AWS.config.credentials})
             this.s3.listObjects(params_in, function(err, data) {
-                if (err) {
-                  console.log(err, err.stack); // an error occurred
+              if (err) {
+                console.log(err, err.stack); // an error occurred
                   _this.logout()
                 }
-                else  {     				  
+                else  {  
+                  _this.albumsFilesIN = []				  
                     for (let x = 0; x < data.Contents.length; x++) {					  
                         _this.albumsFilesIN.push([data.Contents[x].Key])       
                       }   				  
@@ -539,7 +546,8 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
                   console.log(err, err.stack); // an error occurred
                   _this.logout()
                 }
-              else  {                
+              else  {  
+                  _this.albumsFilesOUT = []				  
                   for (let x = 0; x < data.Contents.length; x++) {
                       _this.albumsFilesOUT.push([data.Contents[x].Key])                      
                   }    
@@ -609,8 +617,7 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
             this.$refs.files.click()            
         },
         handleFilesUpload () {
-          this.files = []
-          console.log("Estoy entrando")
+            this.files = []
             this.errorsfile = false            
             this.isSelecting = false
             // let uploadedFiles = this.$refs.files.files	
@@ -623,22 +630,20 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
                 this.showUploading = false			
                 this.files.push(uploadedFiles[i])
             }		   
-            console.log(this.files)
         },
         removeFile (file, error, xhr) {     
-          console.log(this.files)
             this.files.splice(file, 1)
-          console.log(this.files)
             //this.$refs.files.value = null
         }, 
         removeAllFiles() {
            this.$refs.dropzonefiles.removeAllFiles();
         },
         submitFiles(){  
-          console.log(this.check)
-           if (this.check != "" || this.check != null){            
-            this.errorsfile = false
-            if (this.files.length != 0 && this.check != "") {
+          if (this.check == "" || this.check == null){      
+              this.show_check_error = true
+          }else{
+            if (this.files.length != 0) {
+              this.errorsfile = false
               var _this=this            
               this.loadingfiles = true  
                 for (let i = 0; i < this.files.length; i++) {
@@ -678,9 +683,8 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
             else {
                 this.errorsfile = true
             }
-           }else{
-             this.show_check_error = true
-           }
+          }
+          
         },
         getTime(){
           const today = new Date();

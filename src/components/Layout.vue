@@ -37,12 +37,13 @@
     <v-app-bar
       app
       clipped-left
+      color="blue lighten-5"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>Make predictions through AWS with SCAR</v-toolbar-title>
        <v-spacer></v-spacer>
        <v-icon color="red lighten-1">mdi-account-circle</v-icon>
-                  <!-- {{user}} -->
+                  {{user}}
     </v-app-bar>
    <v-content>      
       <router-view></router-view>
@@ -114,19 +115,32 @@
 </template>
 
 <script>
+import jwtDecode from "jwt-decode" 
   export default {
     props: {
       source: String,
     },
     data: () => ({
       drawer: null,
+      user: "",
     }),
     created () {
+        var id_token = JSON.parse(localStorage.getItem("token_id"));
+       if (id_token){
+        var decode = jwtDecode(id_token.token_id)
+        this.user = decode.preferred_username
+      }else {
+        var cognito_token = JSON.parse(localStorage.getItem("session"))
+        var current_user = this.$cognitoAuth.getCurrentUser();
+        this.user = current_user.username
+      } 
     //   this.$vuetify.theme.dark = true
     },
     methods: {
      logout(){        
-            this.$router.replace(this.$route.query.redirect || "/logout");        
+        this.$router.replace(this.$route.query.redirect || "/logout").catch(err => {
+            console.log('You are Log Out!')
+            });        
         },
         to_dashboard(){
           this.$router.replace(this.$route.query.redirect || "/dashboard"); 

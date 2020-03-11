@@ -10,13 +10,11 @@ Vue.use(Router)
 
 function requireAuth (to, from, next) {
     var id_token = JSON.parse(localStorage.getItem("token_id"));
-    console.log(id_token != null)
     if (id_token != null){
       next()
     }else {
       cognitoAuth.isAuthenticated((err, loggedIn) => {
         if (err) return next()
-        console.log(loggedIn)
         if (!loggedIn) {
           next({
             path: '/login',
@@ -35,8 +33,7 @@ function requireAuth (to, from, next) {
     // mode: 'history',
     base: __dirname,
     routes: [
-      { path: '', component: Login, beforeEnter: requireAuth  },
-      { path: '/', component: Login, beforeEnter: requireAuth  },
+      { path: '/', component: Dashboard, beforeEnter: requireAuth  },
       { path: '/dashboard', component: Dashboard, beforeEnter: requireAuth },
       {path : '/settings', component: Settings, beforeEnter: requireAuth },      
       { path: '/login', component: Login},
@@ -46,8 +43,8 @@ function requireAuth (to, from, next) {
           var id_token = JSON.parse(localStorage.getItem("token_id"));
           if (id_token == null){
             cognitoAuth.logout();         
-            AWS.config.credentials.clearCachedId();
           }
+          cognitoAuth.onChange(false)
           next('/login')
           document.getElementsByName('token')['0'].content = '';
           localStorage.removeItem('session');
@@ -55,5 +52,5 @@ function requireAuth (to, from, next) {
           localStorage.clear()
         }
       }
-    ]
+    ],    
   })

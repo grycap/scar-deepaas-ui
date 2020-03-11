@@ -19,38 +19,32 @@ export default {
   computed: {
       isAuth () {
         return this.loggedIn
-      }
+      },
+  
+    
   }, 
   data (){
     return {
       loggedIn: false
     }
   },
-  created() {
-    //  this.$cognitoAuth.getIdToken((err, jwtToken) => {
-		// if (err) {
-		// 	console.log("Dashboard: Couldn't get the session:", err, err.stack);
-		// 	return;
-		// }
-		// this.token = jwtDecode(jwtToken);		
-		// this.user = this.$cognitoAuth.getCurrentUser();
-		// document.getElementsByName("token")["0"].content = jwtToken;
-		// //console.log(jwtToken)
-		// });
-
+  created() { 
     this.$cognitoAuth.isAuthenticated((err, loggedIn) => { 
       if (err) {
         console.log("App: Couldn't get the session:", err, err.stack);
 				return;
 			} 
       this.loggedIn = loggedIn;   
-      console.log(loggedIn) 
 			// this.$eventHub.$emit('check-login',this.loggedIn);
-		});
+    });
+    var id_token = JSON.parse(localStorage.getItem("token_id"));
+    if (id_token){
+      this.loggedIn = true
+    }
 		this.$cognitoAuth.onChange = loggedIn => {
-        this.loggedIn = loggedIn;        
+      this.loggedIn = loggedIn;        
 		// this.$eventHub.$emit('check-login',this.loggedIn);	
-		};			
+    };	
   },
   mounted() {
 		if (typeof localStorage.getItem("session") != "undefined") {
@@ -61,9 +55,9 @@ export default {
 				//console.log(session.user.username);
 				// $(".users-dropdown").text(session.user.username);
 			}        
+    }else {
+      this.loggedIn = false
     }
-    console.log(this.loggedIn)
-  }, 
-  
+  },
 };
 </script>
