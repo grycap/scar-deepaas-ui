@@ -41,6 +41,26 @@
           </v-col>
         </v-row>
 
+		<v-row>
+			<v-checkbox
+				id="checkbox"
+				v-model="checkOption"
+				label="AWS"
+				color="red"
+				value="aws"
+				hide-details
+			></v-checkbox> 
+			<v-checkbox
+				id="checkbox"
+				v-model="checkOption"
+				label="OSCAR"
+				color="indigo"
+				value="oscar"
+				hide-details
+			></v-checkbox> 
+
+		</v-row>
+
         <v-container fluid>
         <v-row dense>
           <v-col cols="12" md="6" >
@@ -353,6 +373,7 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
       user: '', 
       model_folder: '',        
       s3 : new AWS.S3,      
+      minioClient : '',      
       accessKeyId: '',
       secretAccessKey: '',
       sessionToken: '', 
@@ -406,10 +427,19 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
           // maxFilesize: 0.5,          
           addRemoveLinks: true, 
           destroyDropzone: false,
-      }
+	  },
+	  checkOption:''
                        
     }),  
     created(){      
+      var Minio = require('minio')
+      this.minioClient = new Minio.Client({
+          endPoint: this.env.endPoint,    
+          port: this.env.port,   
+          useSSL: true,
+          accessKey: this.env.accessKey,
+          secretKey: this.env.secretKey
+      })
        this.$vuetify.theme.light = true 
       var current= new Date(document.lastModified);          
       this.lastupdate = moment(current).format("MMMM Do YYYY, h:mm:ss a")
@@ -505,30 +535,54 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
       }
 
     },
-    methods: {         
+    methods: {    
+		fileAlbumINCallBack(response){
+			this.albumsFilesIN = []				  
+			this.albumsFilesIN=response
+			console.log(this.albumsFilesIN)
+		},     
         fileAlbumIN(){         
               
             //List input files                
             this.s3.config.update({credentials: AWS.config.credentials})
             this.albumsFilesIN = []				  
             var params_in = {
-              Bucket: this.env.BucketName, /* required */
+                Bucket: this.env.BucketName, /* required */
                 Prefix: this.model_folder + "/input/" + this.user + "/"  // Can be your folder name
             };
             var _this = this               
             this.s3.config.update({credentials: AWS.config.credentials})
-            this.s3.listObjects(params_in, function(err, data) {
-              if (err) {
-                console.log(err, err.stack); // an error occurred
-                  _this.logout()
-                }
-                else  {  
-                  _this.albumsFilesIN = []				  
-                    for (let x = 0; x < data.Contents.length; x++) {					  
-                        _this.albumsFilesIN.push([data.Contents[x].Key])       
-                      }   				  
-                }   
-            });
+            // this.s3.listObjects(params_in, function(err, data) {
+            //   if (err) {
+            //     console.log(err, err.stack); // an error occurred
+            //     //   _this.logout()
+            //     }
+            //     else  {  
+            //       _this.albumsFilesIN = []				  
+            //         for (let x = 0; x < data.Contents.length; x++) {					  
+            //             _this.albumsFilesIN.push([data.Contents[x].Key])       
+            //           }   				  
+            //     }   
+			// });
+			console.log(params_in)
+			let stream = this.minioClient.listObjects(params_in.Bucket,params_in.Prefix,true)
+			var funct=[]
+			stream.on('data',function(obj) {
+						  
+			  	funct.push(obj.name);				  
+                  
+			})
+			stream.on('error',function(err){
+				console.log(err); // an error occurred
+
+			})
+			stream.on('end', function(e) 
+            {       
+				_this.fileAlbumINCallBack(funct)
+             
+            })
+			
+			
              
         },
         fileAlbumOUT(){
@@ -653,30 +707,52 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
                     var albumPhotosKey = encodeURIComponent(this.albumName_in) + "/";
                     // var photoKey = albumPhotosKey + fileName;
                     var photoKey = this.check + "/input/"+ this.user +"/"+fileName;                    
-
-                    // Use S3 ManagedUpload class as it supports multipart uploads
-                    var upload = new AWS.S3.ManagedUpload({
-                        params: {
-                            Bucket: this.env.BucketName,
-                            Key: photoKey,
-                            Body: file,
-                            ACL: "public-read"
-                        }
-                    });                    
-                    var promise = upload.promise();                    
-                    promise.then(
-                        function(data) {   
-                          _this.loadingfiles = false  
+					console.log(photoKey)
+					this.minioClient.presignedPutObject(this.env.BucketName, photoKey, 24*60*60, function(err, presignedUrl) {
+					if (err){
+						console.log(err)  
+					}else{
+						fetch(presignedUrl, {
+							method: 'PUT',
+							body: file
+				
+						}).then(() => {
+						  _this.loadingfiles = false  
                           _this.fileAlbumIN()    
                           _this.group_in = true
                           _this.$refs.dropzonefiles.removeAllFiles();
-                          _this.files = []     
-                          // _this.$refs.files.value = null         
-                        },
-                        function(err) {
-                        return alert("There was an error uploading your photo: ", err.message);
-                        }
-                    );
+                          _this.files = []  
+						}).catch((e) => {
+						 return alert("There was an error uploading your photo: ", err.message);
+						});
+					} 
+					
+				})
+
+
+                    // Use S3 ManagedUpload class as it supports multipart uploads
+                    // var upload = new AWS.S3.ManagedUpload({
+                    //     params: {
+                    //         Bucket: this.env.BucketName,
+                    //         Key: photoKey,
+                    //         Body: file,
+                    //         ACL: "public-read"
+                    //     }
+                    // });                    
+                    // var promise = upload.promise();                    
+                    // promise.then(
+                    //     function(data) {   
+                    //       _this.loadingfiles = false  
+                    //       _this.fileAlbumIN()    
+                    //       _this.group_in = true
+                    //       _this.$refs.dropzonefiles.removeAllFiles();
+                    //       _this.files = []     
+                    //       // _this.$refs.files.value = null         
+                    //     },
+                    //     function(err) {
+                    //     return alert("There was an error uploading your photo: ", err.message);
+                    //     }
+                    // );
                 } 
               console.log("Successfully uploaded photo.");         
             }        

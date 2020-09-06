@@ -98,7 +98,6 @@ export default {
     if (this.model.username != "" && this.model.password != ""){
     this.loading = true
 		this.$cognitoAuth.signin(this.model.username, this.model.password, (err, result) => {
-			console.log(result)
 			if (err) {				
 				this.loading = false;				
 				alert ("Error: " + err.message)
