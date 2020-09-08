@@ -28,11 +28,14 @@
           justify="center" >
           <v-col>
               <div class="text-center">
-                <h3 class="headline font-weight-black">Interacting with AWS Services</h3>
+                <h3 class="headline font-weight-black">Interacting with AWS and OSCAR Services</h3>
                 <p></p>
-                <img src="@/assets/lambda.png"  height= "100" alt="">
+                <!-- <img src="@/assets/lambda.png"  height= "100" alt="">
                 <img src="@/assets/bucket.png"  height= "100" alt="">
-                <img src="@/assets/batch.png"  height= "100" alt="">
+                <img src="@/assets/batch.png"  height= "100" alt=""> -->
+                <img src="@/assets/aws.png"  height= "80" alt="">
+                <img src="@/assets/logo.png"  height= "100" alt="">
+				
                 <p></p>
                 <span class="subheading" style="color:#ff3333; font-size: 15pt">
                   Bucket name: {{env.BucketName}}
@@ -41,24 +44,35 @@
           </v-col>
         </v-row>
 
-		<v-row>
-			<v-checkbox
-				id="checkbox"
-				v-model="checkOption"
-				label="AWS"
-				color="red"
-				value="aws"
-				hide-details
-			></v-checkbox> 
-			<v-checkbox
-				id="checkbox"
-				v-model="checkOption"
-				label="OSCAR"
-				color="indigo"
-				value="oscar"
-				hide-details
-			></v-checkbox> 
-
+		<v-row align="center" justify="center" >
+			<v-card flat>
+				<v-card-title  class="justify-center" style="text-decoration: underline;">
+					<img src="" alt="">                 
+                    Select a Method of Deployment
+              </v-card-title>
+			  <v-row>
+					<v-checkbox
+						id="checkbox"
+						v-model="checkOption"
+						label="AWS"
+						color="red"
+						value="aws"
+						hide-details
+					></v-checkbox> 
+					<v-spacer></v-spacer>
+					<v-checkbox
+						id="checkbox"
+						v-model="checkOption"
+						label="OSCAR"
+						color="indigo"
+						value="oscar"
+						hide-details
+					></v-checkbox> 
+			  </v-row>
+				<div class="text-center">
+					<span v-show="errorOption" style="color: #cc3300; font-size: 12px;"><b>Please, select a method of deployment.</b></span>              
+					</div>
+			</v-card>
 		</v-row>
 
         <v-container fluid>
@@ -290,14 +304,15 @@
                         </v-list-item-avatar>                                          
 
                         <v-list-item-content activator>
-                            <v-list-item-title>{{albumfile[0]}}</v-list-item-title>                       											
+                            <v-list-item-title v-show="checkOption=='aws'">{{albumfile[0]}}</v-list-item-title>                       											
+                            <v-list-item-title v-show="checkOption=='oscar'">{{albumfile}}</v-list-item-title>                       											
                         </v-list-item-content>
                         <v-list-item-action>                       
                               <v-btn-toggle multiple>
-                                <v-btn icon ripple @click="downloadFile(albumfile[0])">
+                                <v-btn icon ripple @click="downloadFile(albumfile[0],albumfile)">
                                     <v-icon color="green lighten-1">cloud_download</v-icon>
                                 </v-btn>    
-                                <v-btn icon ripple @click="deleteFile(albumfile[0])">
+                                <v-btn icon ripple @click="deleteFile(albumfile[0],albumfile)">
                                     <v-icon color="red lighten-1">delete_forever</v-icon>
                                 </v-btn>
                             </v-btn-toggle>                         
@@ -307,9 +322,9 @@
 
 
                     <v-list-group                   
-                      sub-group
-                    v-model="group_out"
-                      @click.native="fileAlbumOUT"                   
+                      	sub-group
+                    	v-model="group_out"
+                      	@click.native="fileAlbumOUT"                   
                     >
                       <v-list-item-content slot="activator">
                       <v-list-item-title>
@@ -317,7 +332,10 @@
                         Output
                         </v-list-item-title>
                       </v-list-item-content>
-            
+					
+					<v-list-item>
+                          <v-list-item-title v-show="checkOption=='oscar'"><a href="https://datahub.egi.eu">EGI DATA HUB</a></v-list-item-title>                       											
+					</v-list-item>
                       <v-list-item
                         v-for="(albumfile,key2) in albumsFilesOUT"
                         :key="key2"                             
@@ -328,7 +346,7 @@
                       </v-list-item-avatar>                                          
 
                       <v-list-item-content activator>
-                          <v-list-item-title>{{albumfile[0]}}</v-list-item-title>                       											
+                          <v-list-item-title v-show="checkOption=='aws'">{{albumfile[0]}}</v-list-item-title>                       											
                       </v-list-item-content>
                       <v-list-item-action>                       
                             <v-btn-toggle multiple>
@@ -385,6 +403,7 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
       files: [], 
       albumName_in: 'input',
       errorsfile: false, 
+      errorOption: false, 
       show_check_error: false,
       check: "",
       link:"",
@@ -483,56 +502,90 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
             }
         });              
     },
-    watch: {
-      "check"(val){        
-        if(val != "" ){
-          this.showexample = true
-          if (val =="audio"){
-              this.link = "https://file-examples.com/wp-content/uploads/2017/11/file_example_WAV_1MG.wav"
-              this.link_model = "https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-audio-classification-tf.html"
-              this.model_folder = "audio"
-              this.albums="audio"
-              this.job_name = "scar-deepaas-audio"
-              this.check_state()
-          }else if (val == "posenet"){
-              this.link = "https://storage.googleapis.com/tfjs-models/assets/posenet/skiing.jpg"
-              this.link_model = "https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-posenet-tf.html"
-              this.model_folder = "posenet"
-              this.albums="posenet"
-              this.job_name = "scar-deepaas-posenet"
-              this.check_state()
-          }else if (val == "plants"){
-              this.link = "https://raw.githubusercontent.com/deephdc/plant-classification-theano/master/data/demo-images/image1.jpg"
-              this.link_model = "https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-plants-classification-tf.html"
-              this.model_folder = "plants"
-              this.albums="plants"
-              this.job_name = "scar-deepaas-plants"
-              this.check_state()
-          }else if (val == "darknet"){
-              this.link = "https://raw.githubusercontent.com/grycap/scar/master/examples/darknet/dog.jpg"
-              this.link_model = "https://github.com/grycap/scar/tree/master/examples/darknet"
-              this.model_folder = "darknet"
-              this.albums="darknet"
-              //this.job_name = "scar_deepaas_plants"
-              this.show_table = false
-          }
-          this.show_check_error = false
-          this.showObjectsBuckets = true 
-          //this.listObjs()          
-          
+    watch: {      
+      	"check"(val){   
+			if(this.checkOption == "aws" || this.checkOption == "oscar"){
+				this.errorOption = false
+				if(val == null) {
+					this.files = []          
+					this.showObjectsBuckets = false
+					this.show_check_error = false
+					this.errorsfile = false
+					this.show_table = false
+					this.group_in = false
+					this.showexample = false
+					this.group_out = false              
+				}else if(val != "" ){
+					this.showexample = true
+					if (this.check =="audio"){
+						this.link = "https://file-examples.com/wp-content/uploads/2017/11/file_example_WAV_1MG.wav"
+						this.link_model = "https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-audio-classification-tf.html"
+						this.model_folder = "audio"
+						this.albums="audio"
+						this.job_name = "scar-deepaas-audio"
+						if(this.checkOption!="oscar"){
+							this.check_state()
+						}
+					}else if (val == "posenet"){
+						this.link = "https://storage.googleapis.com/tfjs-models/assets/posenet/skiing.jpg"
+						this.link_model = "https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-posenet-tf.html"
+						this.model_folder = "posenet"
+						this.albums="posenet"
+						this.job_name = "scar-deepaas-posenet"
+						if(this.checkOption!="oscar"){
+							this.check_state()
+						}
+					}else if (this.check == "plants"){
+						this.link = "https://raw.githubusercontent.com/deephdc/plant-classification-theano/master/data/demo-images/image1.jpg"
+						this.link_model = "https://marketplace.deep-hybrid-datacloud.eu/modules/deep-oc-plants-classification-tf.html"
+						this.model_folder = "plants"
+						this.albums="plants"
+						this.job_name = "scar-deepaas-plants"
+						if(this.checkOption!="oscar"){
+							this.check_state()
+						}
+					}else if (val == "darknet"){
+						this.link = "https://raw.githubusercontent.com/grycap/scar/master/examples/darknet/dog.jpg"
+						this.link_model = "https://github.com/grycap/scar/tree/master/examples/darknet"
+						this.model_folder = "darknet"
+						this.albums="darknet"
+						//this.job_name = "scar_deepaas_plants"
+						this.show_table = false
+					}
+					this.show_check_error = false
+					this.showObjectsBuckets = true 
+					//this.listObjs()     
+				}     
 
-        }
-        if(val == null) {
-            this.files = []          
-            this.showObjectsBuckets = false
-            this.show_check_error = false
-            this.errorsfile = false
-            this.show_table = false
-            this.group_in = false
-            this.showexample = false
-            this.group_out = false              
-        }
-      }
+			}else{
+				this.errorOption=true
+				this.files = []          
+				this.showObjectsBuckets = false
+				this.show_check_error = false
+				this.errorsfile = false
+				this.show_table = false
+				this.group_in = false
+				this.showexample = false
+				this.group_out = false
+				console.log("error")
+			}
+		},
+		"checkOption"(value){
+			if(value=="aws" || value == "oscar"){
+				this.errorOption = false,
+				this.check = ''
+				this.files = []          
+				this.showObjectsBuckets = false
+				this.show_check_error = false
+				this.errorsfile = false
+				this.show_table = false
+				this.group_in = false
+				this.showexample = false
+				this.group_out = false  
+			}
+		}
+		  
+        
 
     },
     methods: {    
@@ -543,120 +596,161 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 		},     
         fileAlbumIN(){         
               
-            //List input files                
+			//List input files  
+			              
             this.s3.config.update({credentials: AWS.config.credentials})
             this.albumsFilesIN = []				  
             var params_in = {
                 Bucket: this.env.BucketName, /* required */
                 Prefix: this.model_folder + "/input/" + this.user + "/"  // Can be your folder name
             };
-            var _this = this               
-            this.s3.config.update({credentials: AWS.config.credentials})
-            // this.s3.listObjects(params_in, function(err, data) {
-            //   if (err) {
-            //     console.log(err, err.stack); // an error occurred
-            //     //   _this.logout()
-            //     }
-            //     else  {  
-            //       _this.albumsFilesIN = []				  
-            //         for (let x = 0; x < data.Contents.length; x++) {					  
-            //             _this.albumsFilesIN.push([data.Contents[x].Key])       
-            //           }   				  
-            //     }   
-			// });
-			console.log(params_in)
-			let stream = this.minioClient.listObjects(params_in.Bucket,params_in.Prefix,true)
-			var funct=[]
-			stream.on('data',function(obj) {
-						  
-			  	funct.push(obj.name);				  
-                  
-			})
-			stream.on('error',function(err){
-				console.log(err); // an error occurred
+			var _this = this        
+			if(this.checkOption=="aws"){
+				this.s3.config.update({credentials: AWS.config.credentials})
+				this.s3.listObjects(params_in, function(err, data) {
+				  if (err) {
+				    console.log(err, err.stack); // an error occurred
+				    //   _this.logout()
+				    }
+				    else  {  
+				      _this.albumsFilesIN = []				  
+				        for (let x = 0; x < data.Contents.length; x++) {					  
+				            _this.albumsFilesIN.push([data.Contents[x].Key])       
+				          }   				  
+				    }   
+				});
 
-			})
-			stream.on('end', function(e) 
-            {       
-				_this.fileAlbumINCallBack(funct)
-             
-            })
+			}else if(this.checkOption=="oscar"){
+				let stream = this.minioClient.listObjects(params_in.Bucket,params_in.Prefix,true)
+				var funct=[]
+				stream.on('data',function(obj) {
+							  
+					  funct.push(obj.name);				  
+					  
+				})
+				stream.on('error',function(err){
+					console.log(err); // an error occurred
+	
+				})
+				stream.on('end', function(e) 
+				{       
+					_this.fileAlbumINCallBack(funct)
+				 
+				})
+
+			}      
 			
 			
              
         },
         fileAlbumOUT(){
-          
-          this.s3.config.update({credentials: AWS.config.credentials})
-          this.albumsFilesOUT = []
-          var _this = this
-          //List output files
-          var params_out = {
-              Bucket: this.env.BucketName, /* required */
-              Prefix: this.model_folder + "/output/" + this.user + "/"  // Can be your folder name
-          };              
-          this.s3.listObjects(params_out, function(err, data) {
-              if (err) {
-                  console.log(err, err.stack); // an error occurred
-                  _this.logout()
-                }
-              else  {  
-                  _this.albumsFilesOUT = []				  
-                  for (let x = 0; x < data.Contents.length; x++) {
-                      _this.albumsFilesOUT.push([data.Contents[x].Key])                      
-                  }    
-              }   
-          }); 
+		  
+		  if(this.checkOption!="oscar"){
+
+			  this.s3.config.update({credentials: AWS.config.credentials})
+			  this.albumsFilesOUT = []
+			  var _this = this
+			  //List output files
+			  var params_out = {
+				  Bucket: this.env.BucketName, /* required */
+				  Prefix: this.model_folder + "/output/" + this.user + "/"  // Can be your folder name
+			  };              
+			  this.s3.listObjects(params_out, function(err, data) {
+				  if (err) {
+					  console.log(err, err.stack); // an error occurred
+					  _this.logout()
+					}
+				  else  {  
+					  _this.albumsFilesOUT = []				  
+					  for (let x = 0; x < data.Contents.length; x++) {
+						  _this.albumsFilesOUT.push([data.Contents[x].Key])                      
+					  }    
+				  }   
+			  }); 
+		  }else{
+			this.albumsFilesOUT=[]
+		  }
              
 
         },
-        deleteFile(key){
-            var _this = this            
-            var params = {
-                Bucket: this.env.BucketName, /* required */
-                Delete: {
-                    Objects: [{
-                        Key : key
-                    }]
-                }
-            }
-            this.s3.config.update({credentials: AWS.config.credentials})
-            this.s3.deleteObjects(params, function(err, data) {
-                if (err) {
-                    console.log("There was an error deleting your photo: ", err.message);
-                    _this.logout() //expire credentials
-                } 
-                    console.log("Successfully deleted photo.");
-                    _this.showObjectsBuckets = true 
-                    _this.fileAlbumIN()
-                    _this.group_in = true           
-                    _this.fileAlbumOUT()
-                    _this.group_out = true                
-            });
+        deleteFile(key,albumfile){
+			if(this.checkOption == "aws"){
+				var _this = this            
+				var params = {
+					Bucket: this.env.BucketName, /* required */
+					Delete: {
+						Objects: [{
+							Key : key
+						}]
+					}
+				}
+				this.s3.config.update({credentials: AWS.config.credentials})
+				this.s3.deleteObjects(params, function(err, data) {
+					if (err) {
+						console.log("There was an error deleting your photo: ", err.message);
+						_this.logout() //expire credentials
+					} 
+						console.log("Successfully deleted photo.");
+						_this.showObjectsBuckets = true 
+						_this.fileAlbumIN()
+						_this.group_in = true           
+						_this.fileAlbumOUT()
+						_this.group_out = true                
+				});
+			}else if(this.checkOption == "oscar"){
+				this.minioClient.removeObject(this.env.BucketName, albumfile, function(err, exists) {
+                    if (err){ 
+                       alert("Error:"+err)          
+                    }else{
+                        alert("Files deleted correctly");        
+                    }
+                        
+                })
+			}
 
         }, 
-        downloadFile(key){         
-            var _this = this          
-            var params = {
-                Bucket: this.env.BucketName,
-                Key: key
-            }                   
-            const url = new Promise((resolve, reject) => {
-            this.s3.config.update({credentials: AWS.config.credentials})
-            this.s3.getSignedUrl('getObject', params, function (err, url) {
-              if (err) {
-                reject(err)
-              }
-              resolve(url)
-              })
-            }).then(function(result){
-            axios({url:result,method:'GET',responseType: 'blob'})
-              .then(response => {
-                      _this.forceFileDownload(response,key)  
-                  })
-              .catch(() => 
-              _this.logout())
-            })
+        downloadFile(key,albumfile){  
+			console.log(key)
+			if(this.checkOption=="aws"){
+					var _this = this          
+					var params = {
+						Bucket: this.env.BucketName,
+						Key: key
+					}                   
+					const url = new Promise((resolve, reject) => {
+					this.s3.config.update({credentials: AWS.config.credentials})
+					this.s3.getSignedUrl('getObject', params, function (err, url) {
+					if (err) {
+						reject(err)
+					}
+					resolve(url)
+					})
+					}).then(function(result){
+					axios({url:result,method:'GET',responseType: 'blob'})
+					.then(response => {
+							_this.forceFileDownload(response,key)  
+						})
+					.catch(() => 
+					_this.logout())
+					})
+			} else if(this.checkOption=="oscar"){
+				this.minioClient.presignedGetObject(this.env.BucketName, albumfile, 1500, function(err, presignedUrl) {
+                    if (err){
+                        alert(err)
+                    }else{
+                        axios({url:presignedUrl,method:'GET',responseType: 'blob'})
+                        .then(response => {
+							const url = window.URL.createObjectURL(new Blob([response.data]))
+							const link = document.createElement('a')
+							link.href = url
+							link.setAttribute('download', albumfile) //or any other extension
+							document.body.appendChild(link)
+							link.click()
+
+                        })
+                    }
+                })
+			}      
         },
         forceFileDownload(response,key){            
             const url = window.URL.createObjectURL(new Blob([response.data]))
@@ -693,73 +787,79 @@ import 'vue2-dropzone/dist/vue2Dropzone.min.css'
            this.$refs.dropzonefiles.removeAllFiles();
         },
         submitFiles(){  
-          if (this.check == "" || this.check == null){      
-              this.show_check_error = true
-          }else{
-            if (this.files.length != 0) {
-              this.errorsfile = false
-              var _this=this            
-              this.loadingfiles = true  
-                for (let i = 0; i < this.files.length; i++) {
-                    
-                    var file = this.files[i]
-                    var fileName = file.name
-                    var albumPhotosKey = encodeURIComponent(this.albumName_in) + "/";
-                    // var photoKey = albumPhotosKey + fileName;
-                    var photoKey = this.check + "/input/"+ this.user +"/"+fileName;                    
+			if (this.check == "" || this.check == null){      
+				this.show_check_error = true
+			}else{
+				if (this.files.length != 0) {
+				this.errorsfile = false
+				var _this=this            
+				this.loadingfiles = true  
+				for (let i = 0; i < this.files.length; i++) {
+					
+					var file = this.files[i]
+					var fileName = file.name
+					var albumPhotosKey = encodeURIComponent(this.albumName_in) + "/";
+					// var photoKey = albumPhotosKey + fileName;
+					var photoKey = this.check + "/input/"+ this.user +"/"+fileName;                    
 					console.log(photoKey)
-					this.minioClient.presignedPutObject(this.env.BucketName, photoKey, 24*60*60, function(err, presignedUrl) {
-					if (err){
-						console.log(err)  
-					}else{
-						fetch(presignedUrl, {
+					if(this.checkOption=="oscar"){
+
+						this.minioClient.presignedPutObject(this.env.BucketName, photoKey, 24*60*60, function(err, presignedUrl) {
+						if (err){
+							console.log(err)  
+						}else{
+							fetch(presignedUrl, {
 							method: 'PUT',
 							body: file
-				
-						}).then(() => {
-						  _this.loadingfiles = false  
-                          _this.fileAlbumIN()    
-                          _this.group_in = true
-                          _this.$refs.dropzonefiles.removeAllFiles();
-                          _this.files = []  
-						}).catch((e) => {
-						 return alert("There was an error uploading your photo: ", err.message);
-						});
-					} 
-					
-				})
-
-
-                    // Use S3 ManagedUpload class as it supports multipart uploads
-                    // var upload = new AWS.S3.ManagedUpload({
-                    //     params: {
-                    //         Bucket: this.env.BucketName,
-                    //         Key: photoKey,
-                    //         Body: file,
-                    //         ACL: "public-read"
-                    //     }
-                    // });                    
-                    // var promise = upload.promise();                    
-                    // promise.then(
-                    //     function(data) {   
-                    //       _this.loadingfiles = false  
-                    //       _this.fileAlbumIN()    
-                    //       _this.group_in = true
-                    //       _this.$refs.dropzonefiles.removeAllFiles();
-                    //       _this.files = []     
-                    //       // _this.$refs.files.value = null         
-                    //     },
-                    //     function(err) {
-                    //     return alert("There was an error uploading your photo: ", err.message);
-                    //     }
-                    // );
-                } 
-              console.log("Successfully uploaded photo.");         
-            }        
+						
+							}).then(() => {
+							_this.loadingfiles = false  
+										_this.fileAlbumIN()    
+										_this.group_in = true
+										_this.$refs.dropzonefiles.removeAllFiles();
+										_this.files = []  
+							}).catch((e) => {
+							return alert("There was an error uploading your photo: ", err.message);
+							});
+						} 
+						
+						})
+					}else if (this.checkOption=="aws"){
+						
+								// Use S3 ManagedUpload class as it supports multipart uploads
+								var upload = new AWS.S3.ManagedUpload({
+									params: {
+										Bucket: this.env.BucketName,
+										Key: photoKey,
+										Body: file,
+										ACL: "public-read"
+									}
+								});                    
+								var promise = upload.promise();                    
+								promise.then(
+									function(data) {   
+									_this.loadingfiles = false  
+									_this.fileAlbumIN()    
+									_this.group_in = true
+									_this.$refs.dropzonefiles.removeAllFiles();
+									_this.files = []     
+									// _this.$refs.files.value = null         
+									},
+									function(err) {
+										return alert("There was an error uploading your photo: ", err.message);
+									}
+								);
+							} 
+						console.log("Successfully uploaded photo.");         
+						
+					}
+			}    
             else {
                 this.errorsfile = true
             }
-          }
+
+
+			}
           
         },
         getTime(){

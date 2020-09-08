@@ -29,6 +29,7 @@
             <v-card-text>
                 <v-text-field
                     ref="region"
+                    autocomplete="off"
                     v-model="region"
                     :rules="[() => !!region || 'This field is required']"
                     :error-messages="errorMessages"
@@ -38,6 +39,7 @@
                 <v-text-field
                     ref="clientid"
                     v-model="clientid"
+                    autocomplete="off"
                     :rules="[() => !!clientid || 'This field is required']"
                     :error-messages="errorMessages"
                     label="ClientId"                   
@@ -45,6 +47,7 @@
                 ></v-text-field>
                 <v-text-field
                     ref="userpoolid"
+                    autocomplete="off"
                     v-model="userpoolid"
                     :rules="[() => !!userpoolid || 'This field is required']"
                     :error-messages="errorMessages"
@@ -61,6 +64,7 @@
                 ></v-text-field>
                 <v-text-field
                     ref="identity"
+                    autocomplete="off"
                     v-model="identity"
                     :rules="[() => !!identity || 'This field is required']"
                     :error-messages="errorMessages"
@@ -80,7 +84,69 @@
             </v-card-actions>
             </v-card>
         </v-col>
+      </v-row>
+      <v-row justify="center" align="center">
+        <v-col cols="12" sm="10" md="8" lg="6">
+            <v-card ref="form">
+            <v-card-title primary-title class="layout justify-center">
+                <div class="headline">Fields to configure the OSCAR Cluster</div>
+            </v-card-title>
+            <v-card-text>
+                <v-text-field
+                    ref="region"
+                    v-model="region"
+                    autocomplete="off"
+                    :rules="[() => !!region || 'This field is required']"
+                    :error-messages="errorMessages"
+                    label="Minio Enpoint"                   
+                    required
+                ></v-text-field>
+                <v-text-field
+                    ref="clientid"
+                    v-model="clientid"
+                    autocomplete="off"
+                    :rules="[() => !!clientid || 'This field is required']"
+                    :error-messages="errorMessages"
+                    label="Port"                   
+                    required
+                ></v-text-field>
+                <v-text-field
+                    ref="userpoolid"
+                    type="password"
+                    autocomplete="off"
+                    v-model="userpoolid"
+                    :rules="[() => !!userpoolid || 'This field is required']"
+                    :error-messages="errorMessages"
+                    label="Access Key"                   
+                    required
+                ></v-text-field>
+                <v-text-field
+                    ref="bucket"
+                    type="password"
+                    autocomplete="off"
+                    v-model="bucket"
+                    :rules="[() => !!bucket || 'This field is required']"
+                    :error-messages="errorMessages"
+                    label="Secret Key"                   
+                    required
+                ></v-text-field>
+                
+                
+                
+            </v-card-text>
+            <v-divider class="mt-12"></v-divider>
+            <v-card-actions>
+                <v-btn color="primary" text @click.native="submit()">Submit</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn text @click.native="resetForm()">
+                    <v-icon>mdi-refresh</v-icon>
+                    Cancel</v-btn>                 
+            </v-card-actions>
+            </v-card>
+        </v-col>
         </v-row>
+
+
   </v-container>
 </template>
 
