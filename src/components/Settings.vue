@@ -20,7 +20,7 @@
         </v-col>
       </v-row>
 
-      <v-row justify="center" align="center">
+      <!-- <v-row justify="center" align="center">
         <v-col cols="12" sm="10" md="8" lg="6">
             <v-card ref="form">
             <v-card-title primary-title class="layout justify-center">
@@ -84,51 +84,51 @@
             </v-card-actions>
             </v-card>
         </v-col>
-      </v-row>
+      </v-row> -->
       <v-row justify="center" align="center">
         <v-col cols="12" sm="10" md="8" lg="6">
             <v-card ref="form">
             <v-card-title primary-title class="layout justify-center">
-                <div class="headline">Fields to configure the OSCAR Cluster</div>
+                <div class="headline">Fields to configure access to MinIO</div>
             </v-card-title>
             <v-card-text>
                 <v-text-field
                     ref="region"
                     v-model="region"
                     autocomplete="off"
-                    :rules="[() => !!region || 'This field is required']"
+                    
                     :error-messages="errorMessages"
                     label="Minio Enpoint"                   
-                    required
+                    
                 ></v-text-field>
                 <v-text-field
                     ref="clientid"
                     v-model="clientid"
                     autocomplete="off"
-                    :rules="[() => !!clientid || 'This field is required']"
+                   
                     :error-messages="errorMessages"
                     label="Port"                   
-                    required
+                    
                 ></v-text-field>
                 <v-text-field
                     ref="userpoolid"
                     type="password"
                     autocomplete="off"
                     v-model="userpoolid"
-                    :rules="[() => !!userpoolid || 'This field is required']"
+                   
                     :error-messages="errorMessages"
                     label="Access Key"                   
-                    required
+                    
                 ></v-text-field>
                 <v-text-field
                     ref="bucket"
                     type="password"
                     autocomplete="off"
                     v-model="bucket"
-                    :rules="[() => !!bucket || 'This field is required']"
+                   
                     :error-messages="errorMessages"
                     label="Secret Key"                   
-                    required
+                    
                 ></v-text-field>
                 
                 

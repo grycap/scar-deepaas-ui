@@ -1,0 +1,54 @@
+{
+    "client_id": "fdab5b94-5300-4349-8487-2739af274110",
+    "client_secret": "AM-juut75xv8YF7jOetZcu2kC5Xy4TV02Hm0bSZ_8r7BPDuQ756eFgphCqKaEpY1uMP7rZWaXSsn8rKWY7xVb8A",
+    "redirect_uris": [
+      "https://localhost:8080/callback.html"
+    ],
+    "client_name": "deepaas-ui",
+    "client_uri": null,
+    "logo_uri": null,
+    "contacts": [
+      "dnaranjo@i3m.upv.es"
+    ],
+    "tos_uri": null,
+    "token_endpoint_auth_method": "client_secret_basic",
+    "scope": "address iam phone openid profile offline_access email",
+    "grant_types": [
+      "refresh_token",
+      "authorization_code"
+    ],
+    "response_types": [
+      "code",
+      "token id_token"
+    ],
+    "policy_uri": null,
+    "jwks_uri": null,
+    "jwks": null,
+    "jwksType": "URI",
+    "sector_identifier_uri": null,
+    "request_object_signing_alg": null,
+    "userinfo_signed_response_alg": null,
+    "userinfo_encrypted_response_alg": null,
+    "userinfo_encrypted_response_enc": null,
+    "id_token_signed_response_alg": null,
+    "id_token_encrypted_response_alg": null,
+    "id_token_encrypted_response_enc": null,
+    "default_max_age": 60000,
+    "require_auth_time": true,
+    "default_acr_values": [],
+    "initiate_login_uri": null,
+    "post_logout_redirect_uris": [],
+    "claims_redirect_uris": [],
+    "request_uris": [],
+    "software_statement": null,
+    "software_id": null,
+    "software_version": null,
+    "code_challenge_method": null,
+    "registration_access_token": "eyJraWQiOiJyc2ExIiwiYWxnIjoiUlMyNTYifQ.eyJhdWQiOiJmZGFiNWI5NC01MzAwLTQzNDktODQ4Ny0yNzM5YWYyNzQxMTAiLCJpc3MiOiJodHRwczpcL1wvaWFtLmRlZXAtaHlicmlkLWRhdGFjbG91ZC5ldVwvIiwiaWF0IjoxNTgyODEyNzMzLCJqdGkiOiI5ZTRhMzczZS01M2FkLTQ4NTQtYWYwZS0wMmQ1YjM5ZWZhYjIifQ.GNOHqDxstWyA8rAOFCVuBgzcd0UayR3xBbBaf_c7xz2w9PBnz9o29BKkoywJJCMAOguN24mJk3gxx40x33rN-DSJ-TrMiAQMzjFS82QQXPFpVJ-5k0f9F5CDBhNDp3QsAa0x-3ImWBsBFFYN8Riyo1XDb0lvdCfrzqMJS4Jc3OU",
+    "registration_client_uri": "https://iam.deep-hybrid-datacloud.eu/register/fdab5b94-5300-4349-8487-2739af274110",
+    "softwareId": null,
+    "softwareVersion": null,
+    "token_endpoint_auth_signing_alg": null,
+    "client_secret_expires_at": 0,
+    "client_id_issued_at": 1582812731
+  }
